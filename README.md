@@ -41,3 +41,15 @@ For nested subfolders, the plugin will automatically create these directories in
 
 - Pull requests are welcome.
 - File bugs and suggestions in the Github Issues tracker.
+
+## Releasing
+
+```
+    make release
+```
+
+It will prompt you for your PyPI user and password.
+
+See:
+- https://packaging.python.org/tutorials/packaging-projects/
+- https://packaging.python.org/guides/migrating-to-pypi-org/

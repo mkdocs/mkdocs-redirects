@@ -4,7 +4,6 @@ from setuptools import setup, find_packages
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-
 setup(
     name='mkdocs-redirects',
     version='0.0.2',
@@ -18,8 +17,13 @@ setup(
     license='MIT',
     python_requires='>=2.7',
     install_requires=[
-        'mkdocs>=1.0.4'
+        'mkdocs>=1.0.4',
     ],
+    extras_require={
+        'release': [
+            'twine==1.13.0',
+        ]
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
