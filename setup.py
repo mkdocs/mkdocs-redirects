@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name='mkdocs-redirects',
-    version='0.0.2',
+    version='0.0.3',
     description='A MkDocs plugin for dynamic page redirects to prevent broken links.',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
