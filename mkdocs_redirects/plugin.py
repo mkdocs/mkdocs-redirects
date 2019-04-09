@@ -16,7 +16,7 @@ class RedirectPlugin(BasePlugin):
     def on_post_build(self, config, **kwargs):
         redirects = config.get('redirects', {})
 
-        for old_page, new_page in redirects.iteritems():
+        for old_page, new_page in redirects.items():
             old_page_path = os.path.join(config['site_dir'], '{}.html'.format(old_page))
             new_page_path = os.path.join(config['site_dir'], '{}.html'.format(new_page))
 
