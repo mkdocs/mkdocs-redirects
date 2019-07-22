@@ -27,14 +27,15 @@ In your `mkdocs.yml`, add a `redirects` block that maps the old page location to
 redirects:
   'old': 'some/new_location'
   'something/before': 'another/moved/file'
+  'external': 'http://google.com'
 ```
 
 Note that the `.html` extension should be omitted (and will be automatically appended).
 
-The plugin will dynamically create `old.html` and `something/before.html` in your configured `site_dir` with
+The plugin will dynamically create `old.html`, `something/before.html`, and `external.html` in your configured `site_dir` with
 HTML that will include a meta redirect to the new page location.
 
-The new location will also be appended with `.html` extension and is assumed to be relative to the root of the site.
+If the new location does not start with `http` or `HTTP` then it will also be appended with `.html` extension and is assumed to be relative to the root of the site.
 
 For nested subfolders, the plugin will automatically create these directories in the `site_dir`.
 

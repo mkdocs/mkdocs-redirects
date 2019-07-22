@@ -18,15 +18,16 @@ class RedirectPlugin(BasePlugin):
 
         for old_page, new_page in redirects.items():
             old_page_path = os.path.join(config['site_dir'], '{}.html'.format(old_page))
-            new_page_path = os.path.join(config['site_dir'], '{}.html'.format(new_page))
-
-            # check that the page being redirected to actually exists
-            if not os.path.exists(os.path.dirname(new_page_path)):
-                msg = 'Redirect does not exist for path: {}'.format(new_page_path)
-                if config.get('strict', False):
-                    raise Exception(msg)
-                else:
-                    log.warn(msg)
+            if not new_page.startswith(('http','HTTP')):
+                new_page_path = os.path.join(config['site_dir'], '{}.html'.format(new_page))
+                # check that the page being redirected to actually exists
+                if not os.path.exists(os.path.dirname(new_page_path)):
+                    msg = 'Redirect does not exist for path: {}'.format(new_page_path)
+                    if config.get('strict', False):
+                        raise Exception(msg)
+                    else:
+                        log.warn(msg)
+                new_page = '/{}.html'.format(new_page)
 
             # ensure the folder path exists, recursively for nested directories.
             if not os.path.exists(os.path.dirname(old_page_path)):
@@ -46,4 +47,4 @@ class RedirectPlugin(BasePlugin):
                     Redirecting...
                     </body>
                     </html>
-                """).format(url='/{}.html'.format(new_page)))
+                """).format(url=new_page))
