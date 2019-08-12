@@ -13,8 +13,13 @@ log.addFilter(mkdocs_utils.warning_filter)
 
 class RedirectPlugin(BasePlugin):
 
+    # Config schema for this plugin
+    config_scheme = (
+        ('redirect_maps', config_options.Type(dict, default={})),  # note the trailing comma
+    )
+
     def on_post_build(self, config, **kwargs):
-        redirects = config.get('redirects', {})
+        redirects = self.config.get('redirect_maps', {})
 
         for old_page, new_page in redirects.items():
             old_page_path = os.path.join(config['site_dir'], '{}.html'.format(old_page))
