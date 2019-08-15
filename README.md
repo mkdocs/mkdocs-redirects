@@ -1,9 +1,10 @@
 # mkdocs-redirects
-Open source plugin for Mkdocs page redirects
+
+Plugin for [`mkdocs`](https://www.mkdocs.org/) to create page redirects (e.g. for moved/renamed pages).
 
 ## Installing
 
-> **Note:** This package requires MkDocs version 1.0.4 or higher. 
+> **Note:** This package requires MkDocs version 1.0.4 or higher.
 
 Install with pip:
 
@@ -11,43 +12,55 @@ Install with pip:
 pip install mkdocs-redirects
 ```
 
-Enable the plugin in your `mkdocs.yml`:
+## Using
+
+To use this plugin, specify your desired redirects in the plugin's `redirect_maps` setting in your `mkdocs.yml`:
 
 ```yaml
 plugins:
-    - search
-    - redirects
+    - redirects:
+        redirect_maps:
+            'old.md': 'new.md'
+            'old/file.md': 'new/file.md'
+            'some_file.md': 'http://external.url.com/foobar'
 ```
 
-## Using
+_Note: don't forget that specifying the `plugins` setting will override the defaults if you didn't already have it set! See [this page](https://www.mkdocs.org/user-guide/configuration/#plugins) for more information._
 
-In your `mkdocs.yml`, add a `redirects` block that maps the old page location to the new location:
+The redirects map should take the form of a key/value pair:
 
-```
-redirects:
-  'old': 'some/new_location'
-  'something/before': 'another/moved/file'
-  'external': 'http://google.com'
-```
+- The key of each redirect is the original _markdown doc_ (relative to the `docs_dir` path).
+  - This plugin will handle the filename resolution during the `mkdocs build` process.
+    This should be set to what the original markdown doc's filename was (or what it _would be_ if it existed), not the final HTML file rendered by MkDocs
+- The value is the _redirect target_. This can take the following forms:
+  - Path of the _markdown doc_ you wish to be redirected to (relative to `docs_dir`)
+    - This plugin will handle the filename resolution during the `mkdocs build` process.
+      This should be set to what the markdown doc's filename is, not the final HTML file rendered by MkDocs
+  - External URL (e.g. `http://example.com`)
 
-Note that the `.html` extension should be omitted (and will be automatically appended).
+During the `mkdocs build` process, this plugin will create `.html` files in `site_dir` for each of the "old" file that redirects to the "new" path.
+It will produce a warning if any problems are encountered or of the redirect target doesn't actually exist (useful if you have `strict: true` set).
 
-The plugin will dynamically create `old.html`, `something/before.html`, and `external.html` in your configured `site_dir` with
-HTML that will include a meta redirect to the new page location.
+### `use_directory_urls`
 
-If the new location does not start with `http` or `HTTP` then it will also be appended with `.html` extension and is assumed to be relative to the root of the site.
+If you have `use_directory_urls: true` set (which is the default), this plugin will modify the redirect targets to the _directory_ URL, not the _actual_ `index.html` filename.
+owever, it will create the `index.html` file for each target in the correct place so URL resolution works.
 
-For nested subfolders, the plugin will automatically create these directories in the `site_dir`.
+For example, a redirect map of `'old/dir/README.md': 'new/dir/README.md'` will result in an HTML file created at `$site_dir/old/dir/index.html` which redirects to `/new/dir/.
+
+Additionally, a redirect map of `'old/dir/doc_name.md': 'new/dir/doc_name.md'` will result in `$site_dir/old/dir/doc_name/index.html` redirecting to `/new/dir/doc_name/`
+
+This mimcs the behavior of how MkDocs builds the site dir without this plugin.
 
 ## Contributing
 
-- Pull requests are welcome.
-- File bugs and suggestions in the Github Issues tracker.
+- Pull Requests are welcome.
+- File bugs and suggestions in the [Github Issues tracker](https://github.com/datarobot/mkdocs-redirects/issues).
 
 ## Releasing
 
-```
-    make release
+```bash
+make release
 ```
 
 It will prompt you for your PyPI user and password.
