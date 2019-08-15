@@ -3,9 +3,8 @@ import os
 import textwrap
 
 from mkdocs import utils as mkdocs_utils
-from mkdocs.config import config_options, Config
+from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
-from mkdocs.structure.files import File
 
 log = logging.getLogger('mkdocs.plugin.redirects')
 log.addFilter(utils.warning_filter)
