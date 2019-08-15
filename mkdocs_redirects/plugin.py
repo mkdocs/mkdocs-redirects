@@ -13,13 +13,14 @@ log.addFilter(utils.warning_filter)
 def write_html(config, old_path, new_path):
     """ Write an HTML file in the site_dir with a meta redirect to the new page """
     old_path_abs = os.path.join(config['site_dir'], old_path)
+    old_dir = os.path.dirname(old_path)
     old_dir_abs = os.path.dirname(old_path_abs)
     if not os.path.exists(old_dir_abs):
-        log.debug("Creating directory '%s'", old_dir_abs)
+        log.debug("Creating directory '%s'", old_dir)
         os.makedirs(old_dir_abs)
     with open(old_path_abs, 'w') as f:
-        log.debug("Creating redirect file: '%s', pointing to '%s'",
-                  old_path_abs, new_path)
+        log.debug("Creating redirect: '%s' -> '%s'",
+                  old_path, new_path)
         f.write(textwrap.dedent(
             """
             <!doctype html>
