@@ -7,8 +7,8 @@ from mkdocs.config import config_options, Config
 from mkdocs.plugins import BasePlugin
 from mkdocs.structure.files import File
 
-log = logging.getLogger(__name__)
-log.addFilter(mkdocs_utils.warning_filter)
+log = logging.getLogger('mkdocs.plugin.redirects')
+log.addFilter(utils.warning_filter)
 
 
 class RedirectPlugin(BasePlugin):
