@@ -76,6 +76,11 @@ class RedirectPlugin(BasePlugin):
     def on_files(self, files, config, **kwargs):
         self.redirects = self.config.get('redirect_maps', {})
 
+        # SHIM! Produce a warning if the old root-level 'redirects' config is present
+        if config.get('redirects'):
+            log.warn("The root-level 'redirects:' setting is not valid and has been changed in version 1.0! "
+                     "The plugin-level 'redirect-map' must be used instead. See https://git.io/fjdBN")
+
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
             if not utils.is_markdown_file(page_old):
