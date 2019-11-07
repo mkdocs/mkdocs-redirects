@@ -55,7 +55,7 @@ This mimcs the behavior of how MkDocs builds the site dir without this plugin.
 ## Contributing
 
 - Pull Requests are welcome.
-- File bugs and suggestions in the [Github Issues tracker](https://github.com/datarobot/mkdocs-redirects/issues).
+- File bugs and suggestions in the [GitHub Issues tracker](https://github.com/datarobot/mkdocs-redirects/issues).
 
 ## Releasing
 
