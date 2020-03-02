@@ -29,8 +29,12 @@ def write_html(site_dir, old_path, new_path):
         f.write(textwrap.dedent(
             """
             <!doctype html>
-            <html lang="en" class="no-js">
+            <html lang="en">
             <head>
+                <meta charset="utf-8">
+                <title>{url}</title>
+                <link rel="canonical" href="{url}">
+                <meta name="robots" content="noindex">
                 <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
                 <meta http-equiv="refresh" content="0; url={url}">
             </head>
