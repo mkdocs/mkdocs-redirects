@@ -46,11 +46,11 @@ It will produce a warning if any problems are encountered or of the redirect tar
 If you have `use_directory_urls: true` set (which is the default), this plugin will modify the redirect targets to the _directory_ URL, not the _actual_ `index.html` filename.
 However, it will create the `index.html` file for each target in the correct place so URL resolution works.
 
-For example, a redirect map of `'old/dir/README.md': 'new/dir/README.md'` will result in an HTML file created at `$site_dir/old/dir/index.html` which redirects to `/new/dir/.
+For example, a redirect map of `'old/dir/README.md': 'new/dir/README.md'` will result in an HTML file created at `$site_dir/old/dir/index.html` which redirects to `/new/dir/`.
 
-Additionally, a redirect map of `'old/dir/doc_name.md': 'new/dir/doc_name.md'` will result in `$site_dir/old/dir/doc_name/index.html` redirecting to `/new/dir/doc_name/`
+Additionally, a redirect map of `'old/dir/doc_name.md': 'new/dir/doc_name.md'` will result in `$site_dir/old/dir/doc_name/index.html` redirecting to `/new/dir/doc_name/`.
 
-This mimcs the behavior of how MkDocs builds the site dir without this plugin.
+This mimics the behavior of how MkDocs builds the site dir without this plugin.
 
 ## Contributing
 
@@ -66,5 +66,6 @@ make release
 It will prompt you for your PyPI user and password.
 
 See:
-- https://packaging.python.org/tutorials/packaging-projects/
-- https://packaging.python.org/guides/migrating-to-pypi-org/
+
+- <https://packaging.python.org/tutorials/packaging-projects/>
+- <https://packaging.python.org/guides/migrating-to-pypi-org/>
