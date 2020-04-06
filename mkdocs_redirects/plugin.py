@@ -32,17 +32,14 @@ def write_html(site_dir, old_path, new_path):
             """
             <!doctype html>
             <html lang="en">
-            <head>
                 <meta charset="utf-8">
                 <title>Redirecting...</title>
                 <link rel="canonical" href="{url}">
-                <meta name="robots" content="noindex">
-                <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
+                <script>var anchor = window.location.hash.substr(1); location.href="{url}" + (anchor ? "#" + anchor: "")</script>
                 <meta http-equiv="refresh" content="0; url={url}">
-            </head>
-            <body>
-            Redirecting...
-            </body>
+                <meta name="robots" content="noindex">
+                <h1>Redirecting...</h1>
+                <a href="{url}">Click here if you are not redirected.</a>
             </html>
             """
         ).format(url=new_path))
