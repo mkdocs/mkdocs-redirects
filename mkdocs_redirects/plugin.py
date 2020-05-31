@@ -95,7 +95,7 @@ class RedirectPlugin(BasePlugin):
         # Build a dict of known document pages to validate against later
         self.doc_pages = {}
         for page in files.documentation_pages():  # object type: mkdocs.structure.files.File
-            self.doc_pages[page.src_path] = page
+            self.doc_pages[page.src_path.replace('\\', '/')] = page
 
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
@@ -115,9 +115,9 @@ class RedirectPlugin(BasePlugin):
                 site_url_path = urlparse(config.get('site_url')).path.rstrip('/')
                 if site_url_path:
                     # Take into account the site_url configuration, which could include a path
-                    dest_path = site_url_path + '/' + self.doc_pages[page_new].dest_path
+                    dest_path = site_url_path + '/' + self.doc_pages[page_new].dest_path.replace('\\', '/')
                 else:
-                    dest_path = '/' + self.doc_pages[page_new].dest_path
+                    dest_path = '/' + self.doc_pages[page_new].dest_path.replace('\\', '/')
 
                 # If use_directory_urls is set, redirect to the directory, not the HTML file
                 if use_directory_urls:
