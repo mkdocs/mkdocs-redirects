@@ -34,7 +34,7 @@ def write_html(site_dir, old_path, new_path):
             <html lang="en">
             <head>
                 <meta charset="utf-8">
-                <title>{url}</title>
+                <title>Redirecting...</title>
                 <link rel="canonical" href="{url}">
                 <meta name="robots" content="noindex">
                 <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
