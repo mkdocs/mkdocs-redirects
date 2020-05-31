@@ -2,6 +2,8 @@ import logging
 import os
 import textwrap
 
+from urllib.parse import urlparse
+
 from mkdocs import utils
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
@@ -110,7 +112,12 @@ class RedirectPlugin(BasePlugin):
 
             # Internal document targets require a leading '/' to resolve properly.
             elif page_new in self.doc_pages:
-                dest_path = '/' + self.doc_pages[page_new].dest_path
+                site_url_path = urlparse(config.get('site_url')).path.rstrip('/')
+                if site_url_path:
+                    # Take into account the site_url configuration, which could include a path
+                    dest_path = site_url_path + '/' + self.doc_pages[page_new].dest_path
+                else:
+                    dest_path = '/' + self.doc_pages[page_new].dest_path
 
                 # If use_directory_urls is set, redirect to the directory, not the HTML file
                 if use_directory_urls:
