@@ -48,6 +48,23 @@ def write_html(site_dir, old_path, new_path):
         ).format(url=new_path))
 
 
+def get_relative_html_path(old_page, new_page, use_directory_urls):
+    """ Return the relative path from the old html path to the new html path"""
+    old_path = get_html_path(old_page, use_directory_urls)
+    new_path = get_html_path(new_page, use_directory_urls)
+
+    if use_directory_urls:
+        # remove /index.html from end of path
+        new_path = os.path.dirname(new_path)
+
+    relative_path = os.path.relpath(new_path, start=os.path.dirname(old_path))
+
+    if use_directory_urls:
+        relative_path = relative_path + '/'
+
+    return relative_path
+
+
 def get_html_path(path, use_directory_urls):
     """ Return the HTML file path for a given markdown file """
     parent, filename = os.path.split(path)
@@ -110,18 +127,8 @@ class RedirectPlugin(BasePlugin):
             if page_new.lower().startswith(('http://', 'https://')):
                 dest_path = page_new
 
-            # Internal document targets require a leading '/' to resolve properly.
             elif page_new in self.doc_pages:
-                site_url_path = urlparse(config.get('site_url')).path.rstrip('/')
-                if site_url_path:
-                    # Take into account the site_url configuration, which could include a path
-                    dest_path = site_url_path + '/' + self.doc_pages[page_new].dest_path.replace('\\', '/')
-                else:
-                    dest_path = '/' + self.doc_pages[page_new].dest_path.replace('\\', '/')
-
-                # If use_directory_urls is set, redirect to the directory, not the HTML file
-                if use_directory_urls:
-                    dest_path = dest_path.split('index.html')[0]
+                dest_path = get_relative_html_path(page_old, page_new, use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
