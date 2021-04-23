@@ -1,7 +1,8 @@
-1.0.2 (unreleased)
+1.0.2 (2021-04-23)
 ------------------
 
-- ...
+- Use relative paths for redirects: https://github.com/datarobot/mkdocs-redirects/pull/19
+- Fix for python 2/3 compatibility.
 
 1.0.1 (2020-05-31)
 ------------------
