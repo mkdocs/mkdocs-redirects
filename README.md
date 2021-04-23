@@ -55,7 +55,33 @@ This mimics the behavior of how MkDocs builds the site dir without this plugin.
 ## Contributing
 
 - Pull Requests are welcome.
+- Make sure to update CHANGES.md
 - File bugs and suggestions in the [GitHub Issues tracker](https://github.com/datarobot/mkdocs-redirects/issues).
+
+## Developing
+
+### Setup a virtualenv
+
+Create a virtualenv using a method of your choice.
+
+```bash
+brew install pyenv pyenv-virtualenv
+pyenv install 2.7.18
+pyenv virtualenv 2.7.18 mkdocs-redirects
+pyenv activate mkdocs-redirects
+```
+
+### Build
+
+```bash
+make build
+```
+
+### Test
+
+```bash
+make test
+```
 
 ## Releasing
 
