@@ -2,7 +2,7 @@ import logging
 import os
 import textwrap
 
-from urllib.parse import urlparse
+from six.moves.urllib_parse import urlparse
 
 from mkdocs import utils
 from mkdocs.config import config_options
