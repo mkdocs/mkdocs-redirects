@@ -5,7 +5,6 @@ from setuptools import setup, find_packages
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-
 test_requirements = [
     'pytest<5',  # py2 compatibility
 ]
@@ -29,6 +28,7 @@ setup(
     python_requires='>=2.7',
     install_requires=[
         'mkdocs>=1.0.4,<2',
+        'six>=1.15.0,<2',
     ],
     extras_require={
         'dev': test_requirements + release_requirements,
