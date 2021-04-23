@@ -6,6 +6,15 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
+test_requirements = [
+    'pytest<5',  # py2 compatibility
+]
+
+release_requirements = [
+    'twine>=1.13.0,<2',  # py2 compatibility
+]
+
+
 setup(
     name='mkdocs-redirects',
     version='1.0.1',
@@ -19,12 +28,12 @@ setup(
     license='MIT',
     python_requires='>=2.7',
     install_requires=[
-        'mkdocs>=1.0.4',
+        'mkdocs>=1.0.4,<2',
     ],
     extras_require={
-        'release': [
-            'twine==1.13.0',
-        ]
+        'dev': test_requirements + release_requirements,
+        'test': test_requirements,
+        'release': release_requirements,
     },
     classifiers=[
         'Development Status :: 4 - Beta',
