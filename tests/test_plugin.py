@@ -4,6 +4,7 @@ from mkdocs_redirects.plugin import get_relative_html_path
 
 
 @pytest.mark.parametrize(["old_page", "new_page", "expected"], [
+    ("old.md", "index.md", "../"),
     ("old.md", "new.md", "../new/"),
     ("foo/old.md", "foo/new.md", "../new/"),
     ("foo/fizz/old.md", "foo/bar/new.md", "../../bar/new/"),
@@ -16,6 +17,7 @@ def test_relative_redirect_directory_urls(old_page, new_page, expected):
 
 
 @pytest.mark.parametrize(["old_page", "new_page", "expected"], [
+    ("old.md", "index.md", "index.html"),
     ("old.md", "new.md", "new.html"),
     ("foo/old.md", "foo/new.md", "new.html"),
     ("foo/fizz/old.md", "foo/bar/new.md", "../bar/new.html"),
