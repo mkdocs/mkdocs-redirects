@@ -16,7 +16,7 @@ release_requirements = [
 
 setup(
     name='mkdocs-redirects',
-    version='1.0.3',
+    version='1.0.4b0',
     description='A MkDocs plugin for dynamic page redirects to prevent broken links.',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
