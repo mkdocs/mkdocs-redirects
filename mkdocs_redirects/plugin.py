@@ -55,7 +55,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
     if use_directory_urls:
         # remove /index.html from end of path
-        new_path = os.path.dirname(new_path)
+        new_path = os.path.dirname(new_path) or './'
 
     relative_path = os.path.relpath(new_path, start=os.path.dirname(old_path))
 
