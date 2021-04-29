@@ -1,7 +1,7 @@
 1.0.3 (unreleased)
 ------------------
 
-- ...
+- Fix crash on redirect targets to `index.md` or `README.md` with `use_directory_urls: true`: https://github.com/datarobot/mkdocs-redirects/pull/21
 
 1.0.2 (2021-04-23)
 ------------------
