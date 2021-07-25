@@ -27,8 +27,7 @@ setup(
     license='MIT',
     python_requires='>=2.7',
     install_requires=[
-        'mkdocs>=1.0.4,<2',
-        'six>=1.15.0,<2',
+        'mkdocs>=1.0.4,<2'
     ],
     extras_require={
         'dev': test_requirements + release_requirements,
@@ -44,10 +43,11 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     packages=find_packages(),
     entry_points={
