@@ -13,9 +13,9 @@ log.addFilter(utils.warning_filter)
 def write_html(site_dir, old_path, new_path):
     """ Write an HTML file in the site_dir with a meta redirect to the new page """
     # Determine all relevant paths
-    old_path_abs = os.path.join(site_dir, old_path)
-    old_dir = os.path.dirname(old_path)
-    old_dir_abs = os.path.dirname(old_path_abs)
+    old_path_abs = os.path.join(site_dir, old_path).replace('\\', '/')
+    old_dir = os.path.dirname(old_path).replace('\\', '/')
+    old_dir_abs = os.path.dirname(old_path_abs).replace('\\', '/')
 
     # Create parent directories if they don't exist
     if not os.path.exists(old_dir_abs):
@@ -57,7 +57,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
     if use_directory_urls:
         relative_path = relative_path + '/'
 
-    return relative_path
+    return relative_path.replace('\\', '/')
 
 
 def get_html_path(path, use_directory_urls):
