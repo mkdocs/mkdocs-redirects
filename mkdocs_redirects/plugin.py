@@ -24,9 +24,6 @@ def write_html(site_dir, old_path, new_path):
         log.debug("Creating directory '%s'", old_dir)
         os.makedirs(old_dir_abs)
 
-    # Make sure to convert Windows path separators to URL separators
-    new_path = new_path.replace('\\', '/')
-
     # Write the HTML redirect file in place of the old file
     with open(old_path_abs, 'w') as f:
         log.debug("Creating redirect: '%s' -> '%s'",
@@ -48,7 +45,7 @@ def write_html(site_dir, old_path, new_path):
             </body>
             </html>
             """
-        ).format(url=new_path))
+        ).format(url=new_path.replace('\\', '/')))
 
 
 def get_relative_html_path(old_page, new_page, use_directory_urls):
