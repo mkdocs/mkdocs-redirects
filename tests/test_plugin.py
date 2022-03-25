@@ -1,5 +1,8 @@
+"""
+Copyright 2019-2022 DataRobot, Inc. and its affiliates.
+All rights reserved.
+"""
 import pytest
-
 from mkdocs_redirects.plugin import get_relative_html_path
 
 

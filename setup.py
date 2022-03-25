@@ -1,5 +1,10 @@
+"""
+Copyright 2019-2022 DataRobot, Inc. and its affiliates.
+All rights reserved.
+"""
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 
 def read(fname):

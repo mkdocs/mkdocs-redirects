@@ -2,6 +2,8 @@
 
 Plugin for [`mkdocs`](https://www.mkdocs.org/) to create page redirects (e.g. for moved/renamed pages).
 
+Initially developed by [DataRobot](https://www.datarobot.com/).
+
 ## Installing
 
 > **Note:** This package requires MkDocs version 1.0.4 or higher.

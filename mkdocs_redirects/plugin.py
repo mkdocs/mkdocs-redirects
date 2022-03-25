@@ -1,12 +1,15 @@
+"""
+Copyright 2019-2022 DataRobot, Inc. and its affiliates.
+All rights reserved.
+"""
 import logging
 import os
 import textwrap
 
-from six.moves.urllib_parse import urlparse
-
 from mkdocs import utils
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
+from six.moves.urllib_parse import urlparse
 
 log = logging.getLogger('mkdocs.plugin.redirects')
 log.addFilter(utils.warning_filter)

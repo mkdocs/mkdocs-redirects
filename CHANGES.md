@@ -1,7 +1,7 @@
 1.0.4 (unreleased)
 ------------------
 
-- ...
+-  Transferred ownership of the package to mkdocs organization.
 
 1.0.3 (2021-04-29)
 ------------------
