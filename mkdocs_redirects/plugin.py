@@ -4,6 +4,7 @@ All rights reserved.
 """
 import logging
 import os
+import posixpath
 import textwrap
 
 from mkdocs import utils
@@ -57,9 +58,9 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
     if use_directory_urls:
         # remove /index.html from end of path
-        new_path = os.path.dirname(new_path) or './'
+        new_path = posixpath.dirname(new_path) or './'
 
-    relative_path = os.path.relpath(new_path, start=os.path.dirname(old_path))
+    relative_path = posixpath.relpath(new_path, start=posixpath.dirname(old_path))
 
     if use_directory_urls:
         relative_path = relative_path + '/'
@@ -69,8 +70,8 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
 def get_html_path(path, use_directory_urls):
     """ Return the HTML file path for a given markdown file """
-    parent, filename = os.path.split(path)
-    name_orig = os.path.splitext(filename)[0]
+    parent, filename = posixpath.split(path)
+    name_orig = posixpath.splitext(filename)[0]
 
     # Both `index.md` and `README.md` files are normalized to `index.html` during build
     name = 'index' if name_orig.lower() in ('index', 'readme') else name_orig
@@ -80,15 +81,15 @@ def get_html_path(path, use_directory_urls):
 
         # If it's name is `index`, then that means it's the "homepage" of a directory, so should get placed in that dir
         if name == 'index':
-            return os.path.join(parent, 'index.html')
+            return posixpath.join(parent, 'index.html')
 
         # Otherwise, it's a file within that folder, so it should go in its own directory to resolve properly
         else:
-            return os.path.join(parent, name, 'index.html')
+            return posixpath.join(parent, name, 'index.html')
 
     # Just use the original name if Directory URLs aren't used
     else:
-        return os.path.join(parent, (name + '.html'))
+        return posixpath.join(parent, (name + '.html'))
 
 
 class RedirectPlugin(BasePlugin):
