@@ -71,13 +71,13 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 def get_html_path(path, use_directory_urls):
     """ Return the HTML file path for a given markdown file """
     parent, filename = os.path.split(path)
-    name_orig, ext = os.path.splitext(filename)
+    name_orig = os.path.splitext(filename)[0]
+
+    # Both `index.md` and `README.md` files are normalized to `index.html` during build
+    name = 'index' if name_orig.lower() in ('index', 'readme') else name_orig
 
     # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
     if use_directory_urls:
-
-        # Both `index.md` and `README.md` files are normalized to `index.html` during build
-        name = 'index' if name_orig.lower() in ('index', 'readme') else name_orig
 
         # If it's name is `index`, then that means it's the "homepage" of a directory, so should get placed in that dir
         if name == 'index':
@@ -89,7 +89,7 @@ def get_html_path(path, use_directory_urls):
 
     # Just use the original name if Directory URLs aren't used
     else:
-        return os.path.join(parent, (name_orig + '.html'))
+        return os.path.join(parent, (name + '.html'))
 
 
 class RedirectPlugin(BasePlugin):
