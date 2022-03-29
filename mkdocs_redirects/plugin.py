@@ -9,7 +9,6 @@ import textwrap
 from mkdocs import utils
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
-from six.moves.urllib_parse import urlparse
 
 log = logging.getLogger('mkdocs.plugin.redirects')
 log.addFilter(utils.warning_filter)

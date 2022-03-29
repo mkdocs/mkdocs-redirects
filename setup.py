@@ -33,7 +33,6 @@ setup(
     python_requires='>=2.7',
     install_requires=[
         'mkdocs>=1.0.4,<2',
-        'six>=1.15.0,<2',
     ],
     extras_require={
         'dev': test_requirements + release_requirements,
