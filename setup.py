@@ -11,11 +11,13 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 test_requirements = [
-    'pytest<5',  # py2 compatibility
+    'pytest',
+    'pytest <5; python_version < "3.0"',
 ]
 
 release_requirements = [
-    'twine>=1.13.0,<2',  # py2 compatibility
+    'twine>=1.13.0',
+    'twine>=1.13.0,<2; python_version < "3.0"',
 ]
 
 

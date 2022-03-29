@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 6'
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '^3.10'
+            os: ubuntu-latest
+          - python: 3.9
+            os: windows-latest
+          - python: 3.8
+            os: ubuntu-latest
+          - python: 3.7
+            os: macos-latest
+          - python: 3.6
+            os: windows-latest
+          - python: 2.7
+            os: ubuntu-latest
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Download source
+        uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python}}
+      - name: Install packages
+        run: |
+          python -m pip install -U pip'>=19'
+          pip install -U --upgrade-strategy=eager .[test]
+      - name: Test
+        run: |
+          pytest -v
