@@ -74,7 +74,7 @@ def get_html_path(path, use_directory_urls):
     name_orig = posixpath.splitext(filename)[0]
 
     # Both `index.md` and `README.md` files are normalized to `index.html` during build
-    name = 'index' if name_orig.lower() in ('index', 'readme') else name_orig
+    name = 'index' if name_orig in ('index', 'README') else name_orig
 
     # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
     if use_directory_urls:
