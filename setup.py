@@ -32,6 +32,7 @@ setup(
     author='Dustin Burke',
     author_email='dustin@datarobot.com',
     license='MIT',
+    license_files=['LICENSE'],
     python_requires='>=2.7',
     install_requires=[
         'mkdocs>=1.0.4,<2',
