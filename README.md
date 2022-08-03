@@ -54,12 +54,6 @@ Additionally, a redirect map of `'old/dir/doc_name.md': 'new/dir/doc_name.md'` w
 
 This mimics the behavior of how MkDocs builds the site dir without this plugin.
 
-## Contributing
-
-- Pull Requests are welcome.
-- Make sure to update CHANGES.md
-- File bugs and suggestions in the [GitHub Issues tracker](https://github.com/datarobot/mkdocs-redirects/issues).
-
 ## Developing
 
 ### Setup a virtualenv
