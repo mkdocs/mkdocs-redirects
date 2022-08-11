@@ -28,7 +28,7 @@ def write_html(site_dir, old_path, new_path):
         os.makedirs(old_dir_abs)
 
     # Write the HTML redirect file in place of the old file
-    with open(old_path_abs, 'w') as f:
+    with open(old_path_abs, 'w', encoding='utf-8') as f:
         log.debug("Creating redirect: '%s' -> '%s'",
                   old_path, new_path)
         f.write(textwrap.dedent(
