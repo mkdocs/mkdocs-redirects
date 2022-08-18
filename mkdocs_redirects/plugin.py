@@ -54,8 +54,8 @@ def write_html(site_dir, old_path, new_path):
 def get_relative_html_path(old_page, new_page, use_directory_urls):
     """ Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
-    new_path_with_hash = get_html_path(new_page, use_directory_urls)
-    new_path, new_hash_fragment = _split_hash_fragment(new_path_with_hash)
+    new_path, new_hash_fragment = _split_hash_fragment(new_page)
+    new_path = get_html_path(new_path, use_directory_urls)
 
     if use_directory_urls:
         # remove /index.html from end of path
@@ -71,8 +71,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
 def get_html_path(path, use_directory_urls):
     """ Return the HTML file path for a given markdown file """
-    path_hash_free, hash_fragment = _split_hash_fragment(path)
-    parent, filename = posixpath.split(path_hash_free)
+    parent, filename = posixpath.split(path)
     name_orig = posixpath.splitext(filename)[0]
 
     # Both `index.md` and `README.md` files are normalized to `index.html` during build
@@ -80,21 +79,18 @@ def get_html_path(path, use_directory_urls):
 
     # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
     if use_directory_urls:
-        index_name = 'index.html' + hash_fragment
 
         # If it's name is `index`, then that means it's the "homepage" of a directory, so should get placed in that dir
         if name == 'index':
-            html_path_segments = [index_name]
+            return posixpath.join(parent, 'index.html')
 
         # Otherwise, it's a file within that folder, so it should go in its own directory to resolve properly
         else:
-            html_path_segments = [name, index_name]
+            return posixpath.join(parent, name, 'index.html')
 
     # Just use the original name if Directory URLs aren't used
     else:
-        html_path_segments = [name + '.html' + hash_fragment]
-
-    return posixpath.join(parent, *html_path_segments)
+        return posixpath.join(parent, (name + '.html'))
 
 
 class RedirectPlugin(BasePlugin):
@@ -158,11 +154,5 @@ def _split_hash_fragment(path):
     "path/to/file#hash" => ("/path/to/file", "#hash")
     "path/to/file"      => ("/path/to/file", "")
     """
-    if '#' in path:
-        parts = path.split('#', maxsplit=1)
-        path = parts[0]
-        hash_fragment = '#' + parts[1]
-    else:
-        hash_fragment = ''
-
-    return path, hash_fragment
+    path, hash, after = path.partition('#')
+    return path, hash + after
