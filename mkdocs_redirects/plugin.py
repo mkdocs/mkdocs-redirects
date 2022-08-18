@@ -54,10 +54,8 @@ def write_html(site_dir, old_path, new_path):
 def get_relative_html_path(old_page, new_page, use_directory_urls):
     """ Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
-    old_path, _ = _split_hash_fragment(old_path)
-
-    new_path = get_html_path(new_page, use_directory_urls)
-    new_path, new_hash_fragment = _split_hash_fragment(new_path)
+    new_path_with_hash = get_html_path(new_page, use_directory_urls)
+    new_path, new_hash_fragment = _split_hash_fragment(new_path_with_hash)
 
     if use_directory_urls:
         # remove /index.html from end of path
@@ -73,8 +71,8 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
 def get_html_path(path, use_directory_urls):
     """ Return the HTML file path for a given markdown file """
-    path, hash_fragment = _split_hash_fragment(path)
-    parent, filename = posixpath.split(path)
+    path_hash_free, hash_fragment = _split_hash_fragment(path)
+    parent, filename = posixpath.split(path_hash_free)
     name_orig = posixpath.splitext(filename)[0]
 
     # Both `index.md` and `README.md` files are normalized to `index.html` during build
@@ -82,18 +80,21 @@ def get_html_path(path, use_directory_urls):
 
     # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
     if use_directory_urls:
+        index_name = 'index.html' + hash_fragment
 
         # If it's name is `index`, then that means it's the "homepage" of a directory, so should get placed in that dir
         if name == 'index':
-            return posixpath.join(parent, 'index.html' + hash_fragment)
+            html_path_segments = [index_name]
 
         # Otherwise, it's a file within that folder, so it should go in its own directory to resolve properly
         else:
-            return posixpath.join(parent, name, 'index.html' + hash_fragment)
+            html_path_segments = [name, index_name]
 
     # Just use the original name if Directory URLs aren't used
     else:
-        return posixpath.join(parent, (name + '.html' + hash_fragment))
+        html_path_segments = [name + '.html' + hash_fragment]
+
+    return posixpath.join(parent, *html_path_segments)
 
 
 class RedirectPlugin(BasePlugin):
@@ -129,13 +130,13 @@ class RedirectPlugin(BasePlugin):
 
         # Walk through the redirect map and write their HTML files
         for page_old, page_new in self.redirects.items():
-            new_path, _ = _split_hash_fragment(str(page_new))
+            new_path_hash_free, _ = _split_hash_fragment(str(page_new))
 
             # External redirect targets are easy, just use it as the target path
             if page_new.lower().startswith(('http://', 'https://')):
                 dest_path = page_new
 
-            elif new_path in self.doc_pages:
+            elif new_path_hash_free in self.doc_pages:
                 dest_path = get_relative_html_path(page_old, page_new, use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
