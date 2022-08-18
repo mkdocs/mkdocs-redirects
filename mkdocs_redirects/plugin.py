@@ -152,7 +152,12 @@ class RedirectPlugin(BasePlugin):
 
 
 def _split_hash_fragment(path):
-    """Returns (path, hash-fragment)"""
+    """
+    Returns (path, hash-fragment)
+
+    "path/to/file#hash" => ("/path/to/file", "#hash")
+    "path/to/file"      => ("/path/to/file", "")
+    """
     if '#' in path:
         parts = path.split('#', maxsplit=1)
         path = parts[0]
