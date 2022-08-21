@@ -16,7 +16,7 @@ log.addFilter(utils.warning_filter)
 
 
 def write_html(site_dir, old_path, new_path):
-    """ Write an HTML file in the site_dir with a meta redirect to the new page """
+    """Write an HTML file in the site_dir with a meta redirect to the new page"""
     # Determine all relevant paths
     old_path_abs = os.path.join(site_dir, old_path)
     old_dir = os.path.dirname(old_path)
@@ -29,9 +29,8 @@ def write_html(site_dir, old_path, new_path):
 
     # Write the HTML redirect file in place of the old file
     with open(old_path_abs, 'w', encoding='utf-8') as f:
-        log.debug("Creating redirect: '%s' -> '%s'",
-                  old_path, new_path)
-        f.write(textwrap.dedent(
+        log.debug("Creating redirect: '%s' -> '%s'", old_path, new_path)
+        content = textwrap.dedent(
             """
             <!doctype html>
             <html lang="en">
@@ -48,11 +47,12 @@ def write_html(site_dir, old_path, new_path):
             </body>
             </html>
             """
-        ).format(url=new_path))
+        ).format(url=new_path)
+        f.write(content)
 
 
 def get_relative_html_path(old_page, new_page, use_directory_urls):
-    """ Return the relative path from the old html path to the new html path"""
+    """Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
     new_path, new_hash_fragment = _split_hash_fragment(new_page)
     new_path = get_html_path(new_path, use_directory_urls)
@@ -70,7 +70,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
 
 def get_html_path(path, use_directory_urls):
-    """ Return the HTML file path for a given markdown file """
+    """Return the HTML file path for a given markdown file"""
     parent, filename = posixpath.split(path)
     name_orig = posixpath.splitext(filename)[0]
 
@@ -105,8 +105,10 @@ class RedirectPlugin(BasePlugin):
 
         # SHIM! Produce a warning if the old root-level 'redirects' config is present
         if config.get('redirects'):
-            log.warn("The root-level 'redirects:' setting is not valid and has been changed in version 1.0! "
-                     "The plugin-level 'redirect-map' must be used instead. See https://git.io/fjdBN")
+            log.warn(
+                "The root-level 'redirects:' setting is not valid and has been changed in version 1.0! "
+                "The plugin-level 'redirect-map' must be used instead. See https://git.io/fjdBN"
+            )
 
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
@@ -143,9 +145,11 @@ class RedirectPlugin(BasePlugin):
                 continue
 
             # DO IT!
-            write_html(config['site_dir'],
-                       get_html_path(page_old, use_directory_urls),
-                       dest_path)
+            write_html(
+                config['site_dir'],
+                get_html_path(page_old, use_directory_urls),
+                dest_path,
+            )
 
 
 def _split_hash_fragment(path):
