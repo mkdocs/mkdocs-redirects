@@ -118,7 +118,7 @@ class RedirectPlugin(BasePlugin):
         # Build a dict of known document pages to validate against later
         self.doc_pages = {}
         for page in files.documentation_pages():  # object type: mkdocs.structure.files.File
-            self.doc_pages[page.src_path.replace('\\', '/')] = page
+            self.doc_pages[page.src_path.replace(os.sep, '/')] = page
 
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
