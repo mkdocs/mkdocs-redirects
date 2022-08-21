@@ -54,7 +54,8 @@ def write_html(site_dir, old_path, new_path):
 def get_relative_html_path(old_page, new_page, use_directory_urls):
     """ Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
-    new_path = get_html_path(new_page, use_directory_urls)
+    new_path, new_hash_fragment = _split_hash_fragment(new_page)
+    new_path = get_html_path(new_path, use_directory_urls)
 
     if use_directory_urls:
         # remove /index.html from end of path
@@ -65,7 +66,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
     if use_directory_urls:
         relative_path = relative_path + '/'
 
-    return relative_path
+    return relative_path + new_hash_fragment
 
 
 def get_html_path(path, use_directory_urls):
@@ -125,12 +126,14 @@ class RedirectPlugin(BasePlugin):
 
         # Walk through the redirect map and write their HTML files
         for page_old, page_new in self.redirects.items():
+            # Need to remove hash fragment from new page to verify existence
+            page_new_without_hash, _ = _split_hash_fragment(str(page_new))
 
             # External redirect targets are easy, just use it as the target path
             if page_new.lower().startswith(('http://', 'https://')):
                 dest_path = page_new
 
-            elif page_new in self.doc_pages:
+            elif page_new_without_hash in self.doc_pages:
                 dest_path = get_relative_html_path(page_old, page_new, use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
@@ -143,3 +146,14 @@ class RedirectPlugin(BasePlugin):
             write_html(config['site_dir'],
                        get_html_path(page_old, use_directory_urls),
                        dest_path)
+
+
+def _split_hash_fragment(path):
+    """
+    Returns (path, hash-fragment)
+
+    "path/to/file#hash" => ("/path/to/file", "#hash")
+    "path/to/file"      => ("/path/to/file", "")
+    """
+    path, hash, after = path.partition('#')
+    return path, hash + after
