@@ -105,7 +105,7 @@ class RedirectPlugin(BasePlugin):
 
         # SHIM! Produce a warning if the old root-level 'redirects' config is present
         if config.get('redirects'):
-            log.warn(
+            log.warning(
                 "The root-level 'redirects:' setting is not valid and has been changed in version 1.0! "
                 "The plugin-level 'redirect-map' must be used instead. See https://git.io/fjdBN"
             )
@@ -113,7 +113,7 @@ class RedirectPlugin(BasePlugin):
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
             if not utils.is_markdown_file(page_old):
-                log.warn("redirects plugin: '%s' is not a valid markdown file!", page_old)
+                log.warning("redirects plugin: '%s' is not a valid markdown file!", page_old)
 
         # Build a dict of known document pages to validate against later
         self.doc_pages = {}
@@ -141,7 +141,7 @@ class RedirectPlugin(BasePlugin):
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
             else:
-                log.warn("Redirect target '%s' does not exist!", page_new)
+                log.warning("Redirect target '%s' does not exist!", page_new)
                 continue
 
             # DO IT!
