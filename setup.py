@@ -10,6 +10,7 @@ from setuptools import find_packages, setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 test_requirements = [
     'pytest',
     'pytest <5; python_version < "3.0"',
@@ -23,7 +24,7 @@ release_requirements = [
 
 setup(
     name='mkdocs-redirects',
-    version='1.0.6',
+    version='1.1.0',
     description='A MkDocs plugin for dynamic page redirects to prevent broken links.',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
@@ -60,7 +61,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'mkdocs.plugins': [
-            'redirects = mkdocs_redirects.plugin:RedirectPlugin'
+            'redirects = mkdocs_redirects.plugin:RedirectPlugin',
         ]
-    }
+    },
 )
