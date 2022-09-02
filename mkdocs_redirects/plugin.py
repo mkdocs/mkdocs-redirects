@@ -4,6 +4,7 @@ All rights reserved.
 """
 import logging
 import os
+import pathlib
 import posixpath
 import textwrap
 
@@ -72,7 +73,9 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 def get_html_path(path, use_directory_urls):
     """Return the HTML file path for a given markdown file"""
     parent, filename = posixpath.split(path)
-    name_orig = posixpath.splitext(filename)[0]
+
+    suffix = ''.join(pathlib.Path(filename).suffixes)
+    name_orig = filename.replace(suffix, '')
 
     # Both `index.md` and `README.md` files are normalized to `index.html` during build
     name = 'index' if name_orig in ('index', 'README') else name_orig
@@ -134,10 +137,8 @@ class RedirectPlugin(BasePlugin):
             # External redirect targets are easy, just use it as the target path
             if page_new.lower().startswith(('http://', 'https://')):
                 dest_path = page_new
-
             elif page_new_without_hash in self.doc_pages:
                 dest_path = get_relative_html_path(page_old, page_new, use_directory_urls)
-
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
             else:
