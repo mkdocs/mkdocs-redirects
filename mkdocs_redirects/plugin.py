@@ -55,7 +55,6 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
     """Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
     new_path, new_hash_fragment = _split_hash_fragment(new_page)
-    new_path = get_html_path(new_path, use_directory_urls)
 
     if use_directory_urls:
         # remove /index.html from end of path
@@ -136,7 +135,8 @@ class RedirectPlugin(BasePlugin):
                 dest_path = page_new
 
             elif page_new_without_hash in self.doc_pages:
-                dest_path = get_relative_html_path(page_old, page_new, use_directory_urls)
+                file = self.doc_pages[page_new_without_hash]
+                dest_path = get_relative_html_path(page_old, file.url, use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
