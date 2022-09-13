@@ -136,7 +136,7 @@ class RedirectPlugin(BasePlugin):
 
             elif page_new_without_hash in self.doc_pages:
                 file = self.doc_pages[page_new_without_hash]
-                dest_path = get_relative_html_path(page_old, f"{file.url}{hash}", use_directory_urls)
+                dest_path = get_relative_html_path(page_old, "".join([file.url, hash]), use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
