@@ -5,7 +5,47 @@ All rights reserved.
 import pytest
 from mkdocs.structure.files import File
 
-from mkdocs_redirects.plugin import _split_hash_fragment, get_relative_html_path
+from mkdocs_redirects import plugin
+
+existing_pages = [
+    "README.md",
+    "foo/README.md",
+    "foo/bar/new.md",
+    "foo/index.md",
+    "foo/new.md",
+    "index.md",
+    "new.md",
+    "new/README.md",
+    "new/index.md",
+]
+
+
+@pytest.fixture
+def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
+    wrote = ()
+
+    def write_html(site_dir, old_path, new_path):
+        nonlocal wrote
+        wrote = (old_path, new_path)
+
+    monkeypatch.setattr(plugin, "write_html", write_html)
+
+    plg = plugin.RedirectPlugin()
+    plg.redirects = {old_page: new_page}
+    plg.doc_pages = {
+        path: File(path, "docs", "site", use_directory_urls) for path in existing_pages
+    }
+
+    plg.on_post_build(dict(use_directory_urls=use_directory_urls, site_dir="site"))
+
+    return wrote
+
+
+@pytest.fixture
+def actual_redirect_target(run_redirect_test):
+    assert bool(run_redirect_test)
+    return run_redirect_test[1]
+
 
 # Tuples of:
 # * Left side of the redirect item
@@ -36,19 +76,13 @@ testdata = [
 ]
 
 
-@pytest.mark.parametrize(["old_page", "new_page", "_", "expected"], testdata)
-def test_relative_redirect_directory_urls(old_page, new_page, _, expected):
-    page_new_without_hash, hash = _split_hash_fragment(new_page)
-    file = File(page_new_without_hash, "docs", "site", True)
-    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=True)
-
-    assert result == expected
-
-
+@pytest.mark.parametrize("use_directory_urls", [False])
 @pytest.mark.parametrize(["old_page", "new_page", "expected", "_"], testdata)
-def test_relative_redirect_no_directory_urls(old_page, new_page, expected, _):
-    page_new_without_hash, hash = _split_hash_fragment(new_page)
-    file = File(page_new_without_hash, "docs", "site", False)
-    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=False)
+def test_relative_redirect_no_directory_urls(actual_redirect_target, expected, _):
+    assert actual_redirect_target == expected
 
-    assert result == expected
+
+@pytest.mark.parametrize("use_directory_urls", [True])
+@pytest.mark.parametrize(["old_page", "new_page", "_", "expected"], testdata)
+def test_relative_redirect_directory_urls(actual_redirect_target, _, expected):
+    assert actual_redirect_target == expected
