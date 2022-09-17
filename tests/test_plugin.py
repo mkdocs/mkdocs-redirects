@@ -19,6 +19,7 @@ existing_pages = [
     "new/README.md",
     "new/index.md",
     "100%.md",
+    "the/fake.md",
 ]
 
 
@@ -37,6 +38,8 @@ def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
     plg.doc_pages = {
         path: File(path, "docs", "site", use_directory_urls) for path in existing_pages
     }
+    plg.doc_pages["the/fake.md"].dest_path = "fake/destination/index.html"
+    plg.doc_pages["the/fake.md"].url = plg.doc_pages["the/fake.md"]._get_url(use_directory_urls)
 
     plg.on_post_build(dict(use_directory_urls=use_directory_urls, site_dir="site"))
 
@@ -71,6 +74,7 @@ testdata = [
     ("fizz/old.md", "foo/bar/new.md", "../foo/bar/new.html", "../../foo/bar/new/"),
     ("foo.md", "foo/index.md", "foo/index.html", "./"),
     ("foo.md", "foo/README.md", "foo/index.html", "./"),
+    ("foo.md", "the/fake.md", "fake/destination/index.html", "../fake/destination/"),
     ("old.md", "index.md#hash", "index.html#hash", "../#hash"),
     ("old.md", "README.md#hash", "index.html#hash", "../#hash"),
     ("old.md", "new.md#hash", "new.html#hash", "../new/#hash"),
@@ -81,6 +85,7 @@ testdata = [
     ("fizz/old.md", "foo/bar/new.md#hash", "../foo/bar/new.html#hash", "../../foo/bar/new/#hash"),
     ("foo.md", "foo/index.md#hash", "foo/index.html#hash", "./#hash"),
     ("foo.md", "foo/README.md#hash", "foo/index.html#hash", "./#hash"),
+    ("foo.md", "the/fake.md#hash", "fake/destination/index.html#hash", "../fake/destination/#hash"),
     ("foo.md", "100%.md", "100%25.html", "../100%25/"),
 ]
 
