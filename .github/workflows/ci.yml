@@ -20,8 +20,6 @@ jobs:
             os: macos-latest
           - python: 3.6
             os: windows-latest
-          - python: 2.7
-            os: ubuntu-latest
     runs-on: ${{matrix.os}}
     steps:
       - name: Download source

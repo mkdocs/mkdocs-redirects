@@ -13,12 +13,10 @@ def read(fname):
 
 test_requirements = [
     'pytest',
-    'pytest <5; python_version < "3.0"',
 ]
 
 release_requirements = [
     'twine>=1.13.0',
-    'twine>=1.13.0,<2; python_version < "3.0"',
 ]
 
 
@@ -34,9 +32,9 @@ setup(
     author_email='dustin@datarobot.com',
     license='MIT',
     license_files=['LICENSE'],
-    python_requires='>=2.7',
+    python_requires='>=3.6',
     install_requires=[
-        'mkdocs>=1.0.4,<2',
+        'mkdocs>=1.0.4',
     ],
     extras_require={
         'dev': test_requirements + release_requirements,
@@ -49,8 +47,6 @@ setup(
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
