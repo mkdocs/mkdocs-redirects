@@ -2,6 +2,7 @@
 Copyright 2019-2022 DataRobot, Inc. and its affiliates.
 All rights reserved.
 """
+
 import pytest
 from mkdocs.structure.files import File
 
@@ -17,6 +18,7 @@ existing_pages = [
     "new.md",
     "new/README.md",
     "new/index.md",
+    "100%.md",
 ]
 
 
@@ -47,6 +49,12 @@ def actual_redirect_target(run_redirect_test):
     return run_redirect_test[1]
 
 
+@pytest.fixture
+def actual_written_file(run_redirect_test):
+    assert bool(run_redirect_test)
+    return run_redirect_test[0]
+
+
 # Tuples of:
 # * Left side of the redirect item
 # * Right side of the redirect item
@@ -73,6 +81,7 @@ testdata = [
     ("fizz/old.md", "foo/bar/new.md#hash", "../foo/bar/new.html#hash", "../../foo/bar/new/#hash"),
     ("foo.md", "foo/index.md#hash", "foo/index.html#hash", "./#hash"),
     ("foo.md", "foo/README.md#hash", "foo/index.html#hash", "./#hash"),
+    ("foo.md", "100%.md", "100%25.html", "../100%25/"),
 ]
 
 
@@ -86,3 +95,30 @@ def test_relative_redirect_no_directory_urls(actual_redirect_target, expected, _
 @pytest.mark.parametrize(["old_page", "new_page", "_", "expected"], testdata)
 def test_relative_redirect_directory_urls(actual_redirect_target, _, expected):
     assert actual_redirect_target == expected
+
+
+# Tuples of:
+# * Left side of the redirect item
+# * Expected path of the written HTML file, use_directory_urls=False
+# * Expected path of the written HTML file, use_directory_urls=True
+testdata = [
+    ("old.md", "old.html", "old/index.html"),
+    ("README.md", "index.html", "index.html"),
+    ("100%.md", "100%.html", "100%/index.html"),
+    ("foo/fizz/old.md", "foo/fizz/old.html", "foo/fizz/old/index.html"),
+    ("foo/fizz/index.md", "foo/fizz/index.html", "foo/fizz/index.html"),
+]
+
+
+@pytest.mark.parametrize("use_directory_urls", [False])
+@pytest.mark.parametrize("new_page", ["new.md"])
+@pytest.mark.parametrize(["old_page", "expected", "_"], testdata)
+def test_page_dest_path_no_directory_urls(actual_written_file, old_page, expected, _):
+    assert actual_written_file == expected
+
+
+@pytest.mark.parametrize("use_directory_urls", [True])
+@pytest.mark.parametrize("new_page", ["new.md"])
+@pytest.mark.parametrize(["old_page", "_", "expected"], testdata)
+def test_page_dest_path_directory_urls(actual_written_file, old_page, _, expected):
+    assert actual_written_file == expected
