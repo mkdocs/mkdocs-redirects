@@ -10,6 +10,7 @@ import textwrap
 from mkdocs import utils
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
+from mkdocs.structure.files import File
 
 log = logging.getLogger('mkdocs.plugin.redirects')
 log.addFilter(utils.warning_filter)
@@ -70,26 +71,8 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
 
 def get_html_path(path, use_directory_urls):
     """Return the HTML file path for a given markdown file"""
-    parent, filename = posixpath.split(path)
-    name_orig = posixpath.splitext(filename)[0]
-
-    # Both `index.md` and `README.md` files are normalized to `index.html` during build
-    name = 'index' if name_orig in ('index', 'README') else name_orig
-
-    # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
-    if use_directory_urls:
-
-        # If it's name is `index`, then that means it's the "homepage" of a directory, so should get placed in that dir
-        if name == 'index':
-            return posixpath.join(parent, 'index.html')
-
-        # Otherwise, it's a file within that folder, so it should go in its own directory to resolve properly
-        else:
-            return posixpath.join(parent, name, 'index.html')
-
-    # Just use the original name if Directory URLs aren't used
-    else:
-        return posixpath.join(parent, (name + '.html'))
+    f = File(path, '', '', use_directory_urls)
+    return f.dest_path.replace(os.sep, '/')
 
 
 class RedirectPlugin(BasePlugin):
