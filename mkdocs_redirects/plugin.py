@@ -57,12 +57,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
     old_path = get_html_path(old_page, use_directory_urls)
     new_path, new_hash_fragment = _split_hash_fragment(new_page)
 
-    if use_directory_urls:
-        # remove /index.html from end of path
-        new_path = posixpath.dirname(new_path) or './'
-
     relative_path = posixpath.relpath(new_path, start=posixpath.dirname(old_path))
-
     if use_directory_urls:
         relative_path = relative_path + '/'
 
