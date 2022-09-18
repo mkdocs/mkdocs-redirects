@@ -31,8 +31,8 @@ from mkdocs.structure.files import File
 )
 def test_relative_redirect_directory_urls(old_page, new_page, expected):
     page_new_without_hash, hash = _split_hash_fragment(new_page)
-    file = File(page_new_without_hash, ".", ".", True)
-    result = get_relative_html_path(old_page, "".join([file.url, hash]), use_directory_urls=True)
+    file = File(page_new_without_hash, "docs", "site", True)
+    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=True)
 
     assert result == expected
 
