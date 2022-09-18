@@ -4,8 +4,9 @@ All rights reserved.
 """
 import pytest
 
-from mkdocs_redirects.plugin import get_relative_html_path, _split_hash_fragment
 from mkdocs.structure.files import File
+
+from mkdocs_redirects.plugin import _split_hash_fragment, get_relative_html_path
 
 
 @pytest.mark.parametrize(
