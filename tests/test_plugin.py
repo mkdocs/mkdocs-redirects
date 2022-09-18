@@ -87,6 +87,7 @@ testdata = [
     ("foo.md", "foo/README.md#hash", "foo/index.html#hash", "./#hash"),
     ("foo.md", "the/fake.md#hash", "fake/destination/index.html#hash", "../fake/destination/#hash"),
     ("foo.md", "100%.md", "100%25.html", "../100%25/"),
+    ("foo/fizz/old.md",) + ("https://example.org/old.md",) * 3,
 ]
 
 
