@@ -65,7 +65,7 @@ def test_relative_redirect_directory_urls(old_page, new_page, expected):
 )
 def test_relative_redirect_no_directory_urls(old_page, new_page, expected):
     page_new_without_hash, hash = _split_hash_fragment(new_page)
-    file = File(page_new_without_hash, ".", ".", False)
-    result = get_relative_html_path(old_page, "".join([file.url, hash]), use_directory_urls=False)
+    file = File(page_new_without_hash, "docs", "site", False)
+    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=False)
 
     assert result == expected
