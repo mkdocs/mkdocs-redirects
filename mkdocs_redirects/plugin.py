@@ -5,7 +5,6 @@ All rights reserved.
 import logging
 import os
 import posixpath
-import textwrap
 
 from mkdocs import utils
 from mkdocs.config import config_options
@@ -14,6 +13,24 @@ from mkdocs.structure.files import File
 
 log = logging.getLogger('mkdocs.plugin.redirects')
 log.addFilter(utils.warning_filter)
+
+
+HTML_TEMPLATE = """
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <link rel="canonical" href="{url}">
+    <meta name="robots" content="noindex">
+    <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
+    <meta http-equiv="refresh" content="0; url={url}">
+</head>
+<body>
+Redirecting...
+</body>
+</html>
+"""
 
 
 def write_html(site_dir, old_path, new_path):
@@ -29,26 +46,9 @@ def write_html(site_dir, old_path, new_path):
         os.makedirs(old_dir_abs)
 
     # Write the HTML redirect file in place of the old file
+    log.debug("Creating redirect: '%s' -> '%s'", old_path, new_path)
+    content = HTML_TEMPLATE.format(url=new_path)
     with open(old_path_abs, 'w', encoding='utf-8') as f:
-        log.debug("Creating redirect: '%s' -> '%s'", old_path, new_path)
-        content = textwrap.dedent(
-            """
-            <!doctype html>
-            <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <title>Redirecting...</title>
-                <link rel="canonical" href="{url}">
-                <meta name="robots" content="noindex">
-                <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
-                <meta http-equiv="refresh" content="0; url={url}">
-            </head>
-            <body>
-            Redirecting...
-            </body>
-            </html>
-            """
-        ).format(url=new_path)
         f.write(content)
 
 
