@@ -4,7 +4,9 @@ All rights reserved.
 """
 import pytest
 
-from mkdocs_redirects.plugin import get_relative_html_path
+from mkdocs.structure.files import File
+
+from mkdocs_redirects.plugin import _split_hash_fragment, get_relative_html_path
 
 
 @pytest.mark.parametrize(
@@ -29,7 +31,9 @@ from mkdocs_redirects.plugin import get_relative_html_path
     ],
 )
 def test_relative_redirect_directory_urls(old_page, new_page, expected):
-    result = get_relative_html_path(old_page, new_page, use_directory_urls=True)
+    page_new_without_hash, hash = _split_hash_fragment(new_page)
+    file = File(page_new_without_hash, "docs", "site", True)
+    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=True)
 
     assert result == expected
 
@@ -60,6 +64,8 @@ def test_relative_redirect_directory_urls(old_page, new_page, expected):
     ],
 )
 def test_relative_redirect_no_directory_urls(old_page, new_page, expected):
-    result = get_relative_html_path(old_page, new_page, use_directory_urls=False)
+    page_new_without_hash, hash = _split_hash_fragment(new_page)
+    file = File(page_new_without_hash, "docs", "site", False)
+    result = get_relative_html_path(old_page, file.url + hash, use_directory_urls=False)
 
     assert result == expected
