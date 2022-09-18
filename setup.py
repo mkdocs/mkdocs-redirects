@@ -34,7 +34,7 @@ setup(
     license_files=['LICENSE'],
     python_requires='>=3.6',
     install_requires=[
-        'mkdocs>=1.0.4',
+        'mkdocs>=1.1.1',
     ],
     extras_require={
         'dev': test_requirements + release_requirements,

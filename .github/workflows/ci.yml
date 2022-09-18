@@ -20,6 +20,9 @@ jobs:
             os: macos-latest
           - python: 3.6
             os: windows-latest
+          - python: 3.6
+            os: ubuntu-latest
+            versions: minimal
     runs-on: ${{matrix.os}}
     steps:
       - name: Download source
@@ -28,6 +31,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.python}}
+      - name: Pin to lowest versions
+        if: matrix.versions == 'minimal'
+        run: |
+          sed -i -E "s/^ +'(\\w+)>=([0-9])/'\\1==\\2/" setup.py
       - name: Install packages
         run: |
           python -m pip install -U pip'>=19'
