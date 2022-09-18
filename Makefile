@@ -13,7 +13,7 @@ dev: clean  ## Setup development environment
 .PHONY: dev
 
 test: dev ## Run tests
-	pytest -v tests/
+	.tools/ci.sh
 .PHONY: test
 
 release: build  ## Release to PyPi

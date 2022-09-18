@@ -41,4 +41,8 @@ jobs:
           pip install -U --upgrade-strategy=eager .[test]
       - name: Test
         run: |
-          pytest -v
+          .tools/ci.sh with_groups
+      - name: Check formatting
+        if: matrix.versions == null
+        run: |
+          git diff --exit-code

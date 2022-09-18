@@ -3,7 +3,6 @@ Copyright 2019-2022 DataRobot, Inc. and its affiliates.
 All rights reserved.
 """
 import pytest
-
 from mkdocs.structure.files import File
 
 from mkdocs_redirects.plugin import _split_hash_fragment, get_relative_html_path

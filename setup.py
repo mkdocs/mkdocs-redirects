@@ -13,6 +13,9 @@ def read(fname):
 
 test_requirements = [
     'pytest',
+    'black',
+    'isort',
+    'autoflake',
 ]
 
 release_requirements = [
