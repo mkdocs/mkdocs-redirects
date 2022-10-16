@@ -12,7 +12,6 @@ from mkdocs.plugins import BasePlugin
 from mkdocs.structure.files import File
 
 log = logging.getLogger('mkdocs.plugin.redirects')
-log.addFilter(utils.warning_filter)
 
 
 HTML_TEMPLATE = """
