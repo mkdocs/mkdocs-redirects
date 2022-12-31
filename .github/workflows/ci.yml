@@ -21,7 +21,7 @@ jobs:
           - python: 3.6
             os: windows-latest
           - python: 3.6
-            os: ubuntu-latest
+            os: ubuntu-20.04
             versions: minimal
     runs-on: ${{matrix.os}}
     steps:
