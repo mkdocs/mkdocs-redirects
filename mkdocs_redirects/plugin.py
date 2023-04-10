@@ -91,7 +91,6 @@ class RedirectPlugin(BasePlugin):
 
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
-
         # Determine if 'use_directory_urls' is set
         use_directory_urls = config.get('use_directory_urls')
 
