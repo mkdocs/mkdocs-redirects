@@ -1,0 +1,130 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mkdocs-redirects"
+description = "A MkDocs plugin for dynamic page redirects to prevent broken links."
+readme = "README.md"
+license = "MIT"
+keywords = ["mkdocs", "mkdocs-plugin", "redirect"]
+authors = [
+    {name = "Dustin Burke", email = "dustin@datarobot.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Typing :: Typed",
+]
+dynamic = ["version"]
+requires-python = ">=3.7"
+dependencies = [
+    "mkdocs >=1.1.1",
+    #min "jinja2 >=2.10.1",
+    #min "markupsafe >=2.0.1",
+]
+
+[project.urls]
+Source = "https://github.com/mkdocs/mkdocs-redirects"
+Issues = "https://github.com/mkdocs/mkdocs-redirects/issues"
+History = "https://github.com/mkdocs/mkdocs-redirects/releases"
+
+[project.entry-points."mkdocs.plugins"]
+redirects = "mkdocs_redirects.plugin:RedirectPlugin"
+
+[tool.hatch.version]
+path = "mkdocs_redirects/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/mkdocs_redirects", "/tests"]
+
+[tool.hatch.envs.default.scripts]
+all = [
+    "hatch run style:fix",
+    "hatch run types:check",
+    "hatch run test:test",
+]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest",
+]
+[tool.hatch.envs.test.scripts]
+test = [
+    "pytest -q",
+]
+
+[tool.hatch.envs.types]
+dependencies = [
+    "mypy",
+]
+[tool.hatch.envs.types.scripts]
+check = [
+    "mypy mkdocs_redirects"
+]
+
+[tool.hatch.envs.style]
+skip-install = true
+dependencies = [
+    "ruff",
+    "isort",
+    "black",
+]
+[tool.hatch.envs.style.scripts]
+fix = [
+    "ruff check --fix mkdocs_redirects tests",
+    "format",
+]
+format = [
+    "isort -q mkdocs_redirects tests",
+    "black -q mkdocs_redirects tests",
+]
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.ruff]
+select = [
+    "F", "W", "E", "UP", "YTT", "C4", "FA", "PIE", "T20", "RSE", "TCH", "DTZ",
+    "B002", "B003", "B005", "B007", "B009", "B012", "B013", "B014", "B015", "B018", "B020", "B021", "B023", "B026", "B033", "B034", "B905",
+    "COM818",
+    "PERF101",
+    "PGH002", "PGH004", "PGH005",
+    "PLE", "PLW0120", "PLW0127",
+    "RUF001", "RUF007", "RUF010", "RUF100", "RUF200",
+    "SIM101", "SIM107", "SIM201", "SIM202", "SIM208", "SIM210", "SIM211", "SIM300", "SIM401", "SIM910",
+]
+ignore = ["E501", "E731"]
+[tool.ruff.flake8-comprehensions]
+allow-dict-calls-with-keyword-arguments = true
+
+[tool.mypy]
+ignore_missing_imports = true
+warn_unreachable = true
+no_implicit_optional = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+addopts = "--tb=native"
+enable_assertion_pass_hook = true
+filterwarnings = ["ignore::DeprecationWarning:.*:",
+                  "default::DeprecationWarning:mkdocs_redirects.*:"]
+testpaths = ["tests"]
