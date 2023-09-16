@@ -6,8 +6,6 @@ Initially developed by [DataRobot](https://www.datarobot.com/).
 
 ## Installing
 
-> **Note:** This package requires MkDocs version 1.0.4 or higher.
-
 Install with pip:
 
 ```bash
@@ -20,14 +18,15 @@ To use this plugin, specify your desired redirects in the plugin's `redirect_map
 
 ```yaml
 plugins:
-    - redirects:
-        redirect_maps:
-            'old.md': 'new.md'
-            'old/file.md': 'new/file.md'
-            'some_file.md': 'http://external.url.com/foobar'
+  - redirects:
+      redirect_maps:
+        'old.md': 'new.md'
+        'old/file.md': 'new/file.md'
+        'some_file.md': 'http://external.url.com/foobar'
 ```
 
-_Note: don't forget that specifying the `plugins` setting will override the defaults if you didn't already have it set! See [this page](https://www.mkdocs.org/user-guide/configuration/#plugins) for more information._
+> **Note**  
+> Don't forget that specifying the `plugins` setting will override the defaults if you didn't already have it set! See [this page](https://www.mkdocs.org/user-guide/configuration/#plugins) for more information.
 
 The redirects map should take the form of a key/value pair:
 
@@ -56,38 +55,20 @@ This mimics the behavior of how MkDocs builds the site dir without this plugin.
 
 ## Developing
 
-### Setup a virtualenv
+Dev dependencies and tasks are managed with [Hatch](https://hatch.pypa.io/). Tasks run in their own environment, created on the fly if missing, in a separate directory tree.
 
-Create a virtualenv using a method of your choice.
-
-```bash
-brew install pyenv pyenv-virtualenv
-pyenv install 2.7.18
-pyenv virtualenv 2.7.18 mkdocs-redirects
-pyenv activate mkdocs-redirects
-```
-
-### Build
+To run all checks and fixes:
 
 ```bash
-make build
+hatch run all
 ```
 
-### Test
-
-```bash
-make test
-```
+You can learn about individual commands from the output, or by inspecting `scripts` in [pyproject.toml](pyproject.toml).
 
 ## Releasing
 
-```bash
-make release
-```
+A release is published to PyPI through GitHub Actions whenever a new tag is pushed.
 
-It will prompt you for your PyPI user and password.
+So, to create a release, run `.tools/release.sh x.y.z` (which bumps the version in `__init__.py`, checks the build, creates a commit and a tag `vx.y.z`, and pushes it to GitHub).
 
-See:
-
-- <https://packaging.python.org/tutorials/packaging-projects/>
-- <https://packaging.python.org/guides/migrating-to-pypi-org/>
+Then fill out a GitHub release with release notes.
