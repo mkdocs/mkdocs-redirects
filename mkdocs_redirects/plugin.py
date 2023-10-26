@@ -72,6 +72,7 @@ def get_html_path(path, use_directory_urls):
 class RedirectPlugin(BasePlugin):
     # Any options that this plugin supplies should go here.
     config_scheme = (
+        ('allow_html_redirect', config_options.Type(bool, default=False)),
         ('redirect_maps', config_options.Type(dict, default={})),  # note the trailing comma
     )
 
@@ -79,10 +80,13 @@ class RedirectPlugin(BasePlugin):
     def on_files(self, files, config, **kwargs):
         self.redirects = self.config.get('redirect_maps', {})
 
+        allow_html = self.config.get('allow_html_redirect', False)
+
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
             if not utils.is_markdown_file(page_old):
-                log.warning("redirects plugin: '%s' is not a valid markdown file!", page_old)
+                if not (allow_html and page_old.lower().endswith(('html', 'htm'))):
+                    log.warning("redirects plugin: '%s' is not a valid markdown file!", page_old)
 
         # Build a dict of known document pages to validate against later
         self.doc_pages = {}
