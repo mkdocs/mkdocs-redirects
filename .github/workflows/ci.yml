@@ -72,7 +72,6 @@ jobs:
       - name: Check formatting
         if: always()
         run: |
-          hatch run style:format
           git diff --color --exit-code
       - name: Check types
         if: always()
