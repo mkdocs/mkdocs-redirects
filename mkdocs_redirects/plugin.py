@@ -83,7 +83,7 @@ class RedirectPlugin(BasePlugin):
             if os.path.isfile(filename):
                 with open(filename) as f:
                     self.redirects = utils.yaml_load(f)
-                    log.debug("Loading yaml file: ", filename)
+                    log.debug("Loading yaml file: '%s'", filename)
             else:
                 log.warning("yaml configuration file '%s' was not found!", filename)
         # If no mapfile, fall back to regular method.
