@@ -73,11 +73,22 @@ class RedirectPlugin(BasePlugin):
     # Any options that this plugin supplies should go here.
     config_scheme = (
         ("redirect_maps", config_options.Type(dict, default={})),  # note the trailing comma
+        ("map_file", config_options.Type(str)),
     )
 
     # Build a list of redirects on file generation
     def on_files(self, files, config, **kwargs):
-        self.redirects = self.config.get("redirect_maps", {})
+        if self.config.get('map_file'):
+            filename = self.config.get('map_file')
+            if os.path.isfile(filename):
+                with open(filename) as f:
+                    self.redirects = utils.yaml_load(f)
+                    log.debug("Loading yaml file: ", filename)
+            else:
+                log.warning("yaml configuration file '%s' was not found!", filename)
+        # If no mapfile, fall back to regular method.
+        if not hasattr(self, 'redirects'):
+            self.redirects = self.config.get('redirect_maps', {})
 
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
