@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mkdocs-redirects"
-description = "A MkDocs plugin for dynamic page redirects to prevent broken links."
+description = "A MkDocs plugin for dynamic page redirects to prevent broken links"
 readme = "README.md"
 license = "MIT"
 keywords = ["mkdocs", "mkdocs-plugin", "redirect"]
@@ -30,7 +30,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dynamic = ["version"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "mkdocs >=1.1.1",
     #min "jinja2 >=2.10.1",
@@ -38,6 +38,7 @@ dependencies = [
 ]
 
 [project.urls]
+Documentation = "https://github.com/mkdocs/mkdocs-redirects#readme"
 Source = "https://github.com/mkdocs/mkdocs-redirects"
 Issues = "https://github.com/mkdocs/mkdocs-redirects/issues"
 History = "https://github.com/mkdocs/mkdocs-redirects/releases"

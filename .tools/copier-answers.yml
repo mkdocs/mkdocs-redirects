@@ -1,0 +1,13 @@
+_commit: 7d6f4ceea
+_src_path: gh:oprypin/py-project-template
+copyright_date: '2019'
+mkdocs: false
+mkdocs_install_self: false
+project_description: A MkDocs plugin for dynamic page redirects to prevent broken links
+project_name: mkdocs-redirects
+pytest: true
+python_distribution_name: mkdocs-redirects
+python_source_path: mkdocs_redirects
+repository_name: mkdocs/mkdocs-redirects
+script_test: false
+
