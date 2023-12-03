@@ -80,7 +80,7 @@ class RedirectPlugin(BasePlugin):
         self.redirects = self.config.get("redirect_maps", {})
 
         # Validate user-provided redirect "old files"
-        for page_old in self.redirects.keys():
+        for page_old in self.redirects:
             if not utils.is_markdown_file(page_old):
                 log.warning("redirects plugin: '%s' is not a valid markdown file!", page_old)
 

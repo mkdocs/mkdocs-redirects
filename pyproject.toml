@@ -94,16 +94,20 @@ format = [
 [tool.ruff]
 line-length = 100
 select = [
-    "I",
-    "F", "W", "E", "UP", "YTT", "C4", "DTZ", "FA", "ISC", "PIE", "T20", "RSE", "TCH",
-    "B002", "B003", "B005", "B007", "B009", "B012", "B013", "B014", "B015", "B018", "B020", "B021", "B023", "B026", "B033", "B034", "B905",
+    "F", "W", "E", "I", "UP", "YTT", "C4", "DTZ", "T10", "FA", "ISC", "PIE", "T20", "RSE", "TCH",
+    "N803", "N804", "N805", "N806", "N807", "N815", "N816", "N999",
+    "B002", "B003", "B005", "B007", "B008", "B009", "B010", "B011", "B012", "B013", "B014", "B015", "B016", "B017", "B018", "B020", "B021", "B022", "B023", "B025", "B026", "B029", "B030", "B031", "B032", "B033", "B034", "B905",
     "COM818",
-    "PERF101",
-    "PGH002", "PGH004", "PGH005",
+    "G001", "G010", "G202",
+    "RET502",
+    "SIM101", "SIM103", "SIM105", "SIM107", "SIM118", "SIM201", "SIM202", "SIM208", "SIM210", "SIM211", "SIM212", "SIM220", "SIM221", "SIM222", "SIM223", "SIM300", "SIM401", "SIM910",
+    "PGH002", "PGH003", "PGH004", "PGH005",
+    "PLC", "PLE",
+    "PLR0124", "PLR0133", "PLR0206", "PLR0402", "PLR1701", "PLR1722", "PLW0120", "PLW0127", "PLW0129", "PLW0131", "PLW0406", "PLW0602", "PLW0603", "PLW0711", "PLW1508", "PLW3301",
+    "TRY302", "TRY401",
     "FLY002",
-    "PLC", "PLE", "PLR0124", "PLR0133", "PLR0206", "PLR0402", "PLR1701", "PLR1722", "PLW0120", "PLW0127", "PLW0129", "PLW0131", "PLW0406", "PLW0602", "PLW0603", "PLW0711",
-    "RUF001", "RUF005", "RUF007", "RUF010", "RUF013", "RUF100", "RUF200",
-    "SIM101", "SIM107", "SIM201", "SIM202", "SIM208", "SIM210", "SIM211", "SIM300", "SIM401", "SIM910",
+    "PERF101", "PERF102", "PERF402",
+    "RUF001", "RUF005", "RUF007", "RUF008", "RUF009", "RUF010", "RUF011", "RUF013", "RUF015", "RUF016", "RUF100", "RUF200",
 ]
 ignore = ["E501", "E731"]
 [tool.ruff.flake8-comprehensions]
