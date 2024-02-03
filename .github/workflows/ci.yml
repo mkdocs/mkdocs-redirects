@@ -33,7 +33,7 @@ jobs:
       - name: Download source
         uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python}}
       - name: Pin to lowest versions
@@ -55,7 +55,7 @@ jobs:
       - name: Download source
         uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install Hatch
@@ -68,11 +68,7 @@ jobs:
       - name: Check style
         if: always()
         run: |
-          hatch run style:fix
-      - name: Check formatting
-        if: always()
-        run: |
-          git diff --color --exit-code
+          hatch run style:check
       - name: Check types
         if: always()
         run: |
