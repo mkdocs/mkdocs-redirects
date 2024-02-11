@@ -29,6 +29,16 @@ plugins:
         'some_file.md': 'http://external.url.com/foobar'
 ```
 
+Alternatively, get the redirects from a seperate `yml` file with `map_file`.
+
+```yaml
+plugins:
+  - redirects:
+      map_file: 'redirect_map.yml'
+```
+
+Where the `map_file` uses the same syntax as above.
+
 > **Note**  
 > Don't forget that specifying the `plugins` setting will override the defaults if you didn't already have it set! See [this page](https://www.mkdocs.org/user-guide/configuration/#plugins) for more information.
 
