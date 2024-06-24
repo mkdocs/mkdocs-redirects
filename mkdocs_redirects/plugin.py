@@ -26,7 +26,7 @@ HTML_TEMPLATE = """
     <meta http-equiv="refresh" content="0; url={url}">
 </head>
 <body>
-Redirecting...
+You're being redirected to a <a href="{url}">new destination</a>.
 </body>
 </html>
 """
