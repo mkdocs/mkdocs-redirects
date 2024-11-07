@@ -21,7 +21,6 @@ HTML_TEMPLATE = """
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <link rel="canonical" href="{url}">
-    <meta name="robots" content="noindex">
     <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
     <meta http-equiv="refresh" content="0; url={url}">
 </head>
