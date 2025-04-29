@@ -14,6 +14,25 @@ from mkdocs.structure.files import File
 log = logging.getLogger("mkdocs.plugin.redirects")
 
 
+def gen_anchor_redirects(anchor_list: list):
+    """
+    Generate a dictionary of redirects for anchors.
+
+    :param anchor_list: A list of tuples containing old anchors and new links.
+    :return: A string of JavaScript redirects for the anchors.
+    """
+    js_redirects = ''
+    for old_anchor, new_link in anchor_list:
+        # Create a JavaScript redirect for each anchor
+        js_redirects += f"""
+        if (window.location.hash === "#{old_anchor}") {{
+            window.location.href = "{new_link}";
+        }}
+        """
+    return js_redirects
+
+
+# This template is used to generate the HTML file for the redirect.
 HTML_TEMPLATE = """
 <!doctype html>
 <html lang="en">
@@ -21,7 +40,11 @@ HTML_TEMPLATE = """
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <link rel="canonical" href="{url}">
-    <script>var anchor=window.location.hash.substr(1);location.href="{url}"+(anchor?"#"+anchor:"")</script>
+    <script>
+        var anchor = window.location.hash.substr(1);
+        {redirects}
+        location.href = `{url}${anchor ? '#' + anchor : ''}`;
+    </script>
     <meta http-equiv="refresh" content="0; url={url}">
 </head>
 <body>
@@ -30,8 +53,14 @@ You're being redirected to a <a href="{url}">new destination</a>.
 </html>
 """
 
+JS_INJECT_EXISTS = """
+<script>
+    {redirects}
+</script>
+"""
 
-def write_html(site_dir, old_path, new_path):
+
+def write_html(site_dir, old_path, new_path, anchor_list):
     """Write an HTML file in the site_dir with a meta redirect to the new page"""
     # Determine all relevant paths
     old_path_abs = os.path.join(site_dir, old_path)
@@ -45,7 +74,8 @@ def write_html(site_dir, old_path, new_path):
 
     # Write the HTML redirect file in place of the old file
     log.debug("Creating redirect: '%s' -> '%s'", old_path, new_path)
-    content = HTML_TEMPLATE.format(url=new_path)
+    redirects = gen_anchor_redirects(anchor_list)  # Example anchor map
+    content = HTML_TEMPLATE.format(url=new_path, redirects=redirects)
     with open(old_path_abs, "w", encoding="utf-8") as f:
         f.write(content)
 
@@ -88,23 +118,52 @@ class RedirectPlugin(BasePlugin):
         for page in files.documentation_pages():  # object type: mkdocs.structure.files.File
             self.doc_pages[page.src_path.replace(os.sep, "/")] = page
 
+        # Create a dictionary to hold anchor maps for redirects
+        redirect_maps = {}
+        for page_old, page_new in self.redirects.items():
+            page_old_without_hash, old_hash = _split_hash_fragment(str(page_old))
+            if page_old_without_hash not in redirect_maps:
+                redirect_maps[page_old_without_hash] = {'hashes': []}
+            if old_hash == "":
+                redirect_maps[page_old_without_hash]['overall'] = page_new
+            else:
+                redirect_maps[page_old_without_hash]['hashes'].append((old_hash, page_new))
+
+        # If a page doesn't have an overall redirect, use the first hash redirect
+        for page_old, redirect_map in redirect_maps.items():
+            if 'overall' not in redirect_map:
+                redirect_maps[page_old]['overall'] = redirect_map['hashes'][0][1]
+
+        self.redirect_maps = redirect_maps
+
+    def on_page_content(self, html, page, config, files):
+        print(page)
+        if page not in self.redirect_maps:
+            return html
+
+        injection_point, after = html.split("</head>", 1)
+        return injection_point + \
+            JS_INJECT_EXISTS.format(redirects=gen_anchor_redirects(self.redirect_maps[page]['hashes'])) + \
+                "</head>" + after
+
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
         # Determine if 'use_directory_urls' is set
         use_directory_urls = config.get("use_directory_urls")
-
-        # Walk through the redirect map and write their HTML files
-        for page_old, page_new in self.redirects.items():
+        for page_old, redirect_maps in self.redirect_maps.items():
             # Need to remove hash fragment from new page to verify existence
-            page_new_without_hash, hash = _split_hash_fragment(str(page_new))
+            page_new = redirect_maps['overall']
+            page_old_without_hash, _ = _split_hash_fragment(str(page_old))
+            page_new_without_hash, new_hash = _split_hash_fragment(str(page_new))
 
             # External redirect targets are easy, just use it as the target path
             if page_new.lower().startswith(("http://", "https://")):
                 dest_path = page_new
 
+            # If the redirect target is a valid internal page, we need to create a relative path
             elif page_new_without_hash in self.doc_pages:
                 file = self.doc_pages[page_new_without_hash]
-                dest_path = get_relative_html_path(page_old, file.url + hash, use_directory_urls)
+                dest_path = get_relative_html_path(page_old, file.url + new_hash, use_directory_urls)
 
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
@@ -112,12 +171,18 @@ class RedirectPlugin(BasePlugin):
                 log.warning("Redirect target '%s' does not exist!", page_new)
                 continue
 
-            # DO IT!
-            write_html(
-                config["site_dir"],
-                get_html_path(page_old, use_directory_urls),
-                dest_path,
-            )
+            if page_old_without_hash in self.doc_pages:
+                # If the old page is a valid document page, it was injected in `on_page_content`.
+                pass
+            else:
+                # Otherwise, create a new HTML file for the redirect
+                dest_path = get_relative_html_path(page_old, dest_path, use_directory_urls)
+                write_html(
+                    config["site_dir"],
+                    get_html_path(page_old, use_directory_urls),
+                    dest_path,
+                    redirect_maps['hashes'],
+                )
 
 
 def _split_hash_fragment(path):
