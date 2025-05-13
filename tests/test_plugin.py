@@ -5,6 +5,7 @@ All rights reserved.
 
 import pytest
 from mkdocs.structure.files import File
+from mkdocs.structure.pages import Page
 
 from mkdocs_redirects import plugin
 
@@ -42,7 +43,10 @@ def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
     plg.doc_pages["the/fake.md"].dest_path = "fake/destination/index.html"
     plg.doc_pages["the/fake.md"].url = plg.doc_pages["the/fake.md"]._get_url(use_directory_urls)
 
-    plg.on_post_build(dict(use_directory_urls=use_directory_urls, site_dir="site"))
+    config = dict(use_directory_urls=use_directory_urls, site_dir="site")
+    for entry in plg.doc_pages.values():
+        plg.on_page_content(None, Page(None, entry, config), config, None)
+    plg.on_post_build(config)
 
     return wrote
 
