@@ -27,7 +27,7 @@ existing_pages = [
 def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
     wrote = ()
 
-    def write_html(site_dir, old_path, new_path):
+    def write_html(site_dir, old_path, new_path, anchor_list):
         nonlocal wrote
         wrote = (old_path, new_path)
 
@@ -35,6 +35,7 @@ def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
 
     plg = plugin.RedirectPlugin()
     plg.redirects = {old_page: new_page}
+    plg.redirect_entries = plugin.build_redirect_entries(plg.redirects)
     plg.doc_pages = {
         path: File(path, "docs", "site", use_directory_urls) for path in existing_pages
     }

@@ -2,9 +2,11 @@
 Copyright 2019-2022 DataRobot, Inc. and its affiliates.
 All rights reserved.
 """
-import logging
+from __future__ import annotations
+
 import os
 import posixpath
+from typing import TypedDict
 
 from mkdocs import utils
 from mkdocs.config import config_options
@@ -13,6 +15,7 @@ from mkdocs.structure.files import File
 
 log = get_plugin_logger(__name__)
 
+
 def gen_anchor_redirects(anchor_list: list):
     """
     Generate a dictionary of redirects for anchors.
@@ -20,7 +23,7 @@ def gen_anchor_redirects(anchor_list: list):
     :param anchor_list: A list of tuples containing old anchors and new links.
     :return: A string of JavaScript redirects for the anchors.
     """
-    js_redirects = ''
+    js_redirects = ""
     for old_anchor, new_link in anchor_list:
         # Create a JavaScript redirect for each anchor
         js_redirects += f"""
@@ -59,7 +62,7 @@ JS_INJECT_EXISTS = """
 """
 
 
-def write_html(site_dir, old_path, new_path, anchor_list):
+def write_html(site_dir: str, old_path: str, new_path: str, anchor_list: list[tuple[str, str]]):
     """Write an HTML file in the site_dir with a meta redirect to the new page"""
     # Determine all relevant paths
     old_path_abs = os.path.join(site_dir, old_path)
@@ -97,11 +100,37 @@ def get_html_path(path, use_directory_urls):
     return f.dest_path.replace(os.sep, "/")
 
 
+class RedirectEntry(TypedDict):
+    hashes: list[tuple[str, str]]
+    overall: str
+
+
+def build_redirect_entries(redirects: dict):
+    redirect_entries: dict[str, RedirectEntry] = {}
+    for page_old, page_new in redirects.items():
+        page_old_without_hash, old_hash = _split_hash_fragment(str(page_old))
+        if page_old_without_hash not in redirect_entries:
+            redirect_entries[page_old_without_hash] = {"hashes": [], "overall": ""}
+        if old_hash == "":
+            redirect_entries[page_old_without_hash]["overall"] = page_new
+        else:
+            redirect_entries[page_old_without_hash]["hashes"].append((old_hash, page_new))
+
+    # If a page doesn't have an overall redirect, use the first hash redirect
+    for page_old, redirect_map in redirect_entries.items():
+        if redirect_map.get("overall", "") == "":
+            redirect_entries[page_old]["overall"] = redirect_map["hashes"][0][1]
+
+    return redirect_entries
+
+
 class RedirectPlugin(BasePlugin):
     # Any options that this plugin supplies should go here.
     config_scheme = (
         ("redirect_maps", config_options.Type(dict, default={})),  # note the trailing comma
     )
+
+    redirect_entries: dict[str, RedirectEntry] = {}
 
     # Build a list of redirects on file generation
     def on_files(self, files, config, **kwargs):
@@ -111,7 +140,9 @@ class RedirectPlugin(BasePlugin):
         for page_old in self.redirects:
             page_old_without_hash, _ = _split_hash_fragment(str(page_old))
             if not utils.is_markdown_file(page_old_without_hash):
-                log.warning("redirects plugin: '%s' is not a valid markdown file!", page_old_without_hash)
+                log.warning(
+                    "redirects plugin: '%s' is not a valid markdown file!", page_old_without_hash
+                )
 
         # Build a dict of known document pages to validate against later
         self.doc_pages = {}
@@ -119,51 +150,41 @@ class RedirectPlugin(BasePlugin):
             self.doc_pages[page.src_path.replace(os.sep, "/")] = page
 
         # Create a dictionary to hold anchor maps for redirects
-        redirect_maps = {}
-        for page_old, page_new in self.redirects.items():
-            page_old_without_hash, old_hash = _split_hash_fragment(str(page_old))
-            if page_old_without_hash not in redirect_maps:
-                redirect_maps[page_old_without_hash] = {'hashes': []}
-            if old_hash == "":
-                redirect_maps[page_old_without_hash]['overall'] = page_new
-            else:
-                redirect_maps[page_old_without_hash]['hashes'].append((old_hash, page_new))
 
-        # If a page doesn't have an overall redirect, use the first hash redirect
-        for page_old, redirect_map in redirect_maps.items():
-            if 'overall' not in redirect_map:
-                redirect_maps[page_old]['overall'] = redirect_map['hashes'][0][1]
-
-        self.redirect_maps = redirect_maps
+        self.redirect_entries = build_redirect_entries(self.redirects)
 
     def on_page_content(self, html, page, config, files):
         use_directory_urls = config.get("use_directory_urls")
         page_old = page.file.src_uri
-        if page_old not in self.redirect_maps:
+        if page_old not in self.redirect_entries:
             return html
 
-        # Fixup redirect_maps to use the correct path
-        for i in range(len(self.redirect_maps[page_old]['hashes'])):
-            old_hash, new_link = self.redirect_maps[page_old]['hashes'][i]
+        # Fixup redirect_entries to use the correct path
+        for i in range(len(self.redirect_entries[page_old]["hashes"])):
+            old_hash, new_link = self.redirect_entries[page_old]["hashes"][i]
             hash_redirect_without_hash, new_hash = _split_hash_fragment(str(new_link))
             if hash_redirect_without_hash in self.doc_pages:
                 file = self.doc_pages[hash_redirect_without_hash]
-                dest_hash_path = get_relative_html_path(page_old, file.url + new_hash, use_directory_urls)
-                self.redirect_maps[page_old]['hashes'][i] = (old_hash, dest_hash_path)
+                dest_hash_path = get_relative_html_path(
+                    page_old, file.url + new_hash, use_directory_urls
+                )
+                self.redirect_entries[page_old]["hashes"][i] = (old_hash, dest_hash_path)
 
-        for old_hash, new_link in self.redirect_maps[page_old]['hashes']:
+        for old_hash, new_link in self.redirect_entries[page_old]["hashes"]:
             log.info(f"Injecting redirect for '{page_old}{old_hash}' to '{new_link}'")
 
-        js_redirects = JS_INJECT_EXISTS.format(redirects=gen_anchor_redirects(self.redirect_maps[page_old]['hashes']))
+        js_redirects = JS_INJECT_EXISTS.format(
+            redirects=gen_anchor_redirects(self.redirect_entries[page_old]["hashes"])
+        )
         return js_redirects + html
 
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
         # Determine if 'use_directory_urls' is set
         use_directory_urls = config.get("use_directory_urls")
-        for page_old, redirect_maps in self.redirect_maps.items():
+        for page_old, redirect_entry in self.redirect_entries.items():
             # Need to remove hash fragment from new page to verify existence
-            page_new = redirect_maps['overall']
+            page_new = redirect_entry["overall"]
             page_old_without_hash, _ = _split_hash_fragment(str(page_old))
             page_new_without_hash, new_hash = _split_hash_fragment(str(page_new))
 
@@ -174,7 +195,9 @@ class RedirectPlugin(BasePlugin):
             # If the redirect target is a valid internal page, we need to create a relative path
             elif page_new_without_hash in self.doc_pages:
                 file = self.doc_pages[page_new_without_hash]
-                dest_path = get_relative_html_path(page_old, file.url + new_hash, use_directory_urls)
+                dest_path = get_relative_html_path(
+                    page_old, file.url + new_hash, use_directory_urls
+                )
 
             # If the redirect target isn't external or a valid internal page, throw an error
             # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
@@ -182,21 +205,23 @@ class RedirectPlugin(BasePlugin):
                 log.warning("Redirect target '%s' does not exist!", page_new)
                 continue
 
-            # Fixup redirect_maps to use the correct path
-            for i in range(len(redirect_maps['hashes'])):
-                old_hash, new_link = redirect_maps['hashes'][i]
+            # Fixup redirect_entry to use the correct path
+            for i in range(len(redirect_entry["hashes"])):
+                old_hash, new_link = redirect_entry["hashes"][i]
                 hash_redirect_without_hash, new_hash = _split_hash_fragment(str(new_link))
                 if hash_redirect_without_hash in self.doc_pages:
                     file = self.doc_pages[hash_redirect_without_hash]
-                    dest_hash_path = get_relative_html_path(page_old, file.url + new_hash, use_directory_urls)
-                    redirect_maps['hashes'][i] = (old_hash, dest_hash_path)
+                    dest_hash_path = get_relative_html_path(
+                        page_old, file.url + new_hash, use_directory_urls
+                    )
+                    redirect_entry["hashes"][i] = (old_hash, dest_hash_path)
 
             if page_old_without_hash in self.doc_pages:
                 # If the old page is a valid document page, it was injected in `on_page_content`.
                 pass
             else:
                 log.info(f"Creating redirect for '{page_old}' to '{dest_path}'")
-                for old_hash, new_link in redirect_maps['hashes']:
+                for old_hash, new_link in redirect_entry["hashes"]:
                     log.info(f"Creating redirect for '{page_old}{old_hash}' to '{new_link}'")
                 # Otherwise, create a new HTML file for the redirect
                 dest_path = get_relative_html_path(page_old, dest_path, use_directory_urls)
@@ -204,7 +229,7 @@ class RedirectPlugin(BasePlugin):
                     config["site_dir"],
                     get_html_path(page_old, use_directory_urls),
                     dest_path,
-                    redirect_maps['hashes'],
+                    redirect_entry["hashes"],
                 )
 
 
