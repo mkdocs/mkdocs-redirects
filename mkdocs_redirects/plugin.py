@@ -106,6 +106,12 @@ class RedirectEntry(TypedDict):
 
 
 def build_redirect_entries(redirects: dict):
+    """
+    This builds a more-detailed lookup table from the original old->new page mappings.
+
+    For each old page, it contains an overall redirect of where to go,
+    as well as specific redirects for each hash, contained in a (hash, redirect) structure.
+    """
     redirect_entries: dict[str, RedirectEntry] = {}
     for page_old, page_new in redirects.items():
         page_old_without_hash, old_hash = _split_hash_fragment(str(page_old))
@@ -159,22 +165,23 @@ class RedirectPlugin(BasePlugin):
         if page_old not in self.redirect_entries:
             return html
 
-        # Fixup redirect_entries to use the correct path
-        for i in range(len(self.redirect_entries[page_old]["hashes"])):
-            old_hash, new_link = self.redirect_entries[page_old]["hashes"][i]
+        hash_redirects = self.redirect_entries[page_old]["hashes"]
+        for i in range(len(hash_redirects)):
+            old_hash, new_link = hash_redirects[i]
             hash_redirect_without_hash, new_hash = _split_hash_fragment(str(new_link))
+            # If we are redirecting to a page that exists, update the destination hash path.
             if hash_redirect_without_hash in self.doc_pages:
                 file = self.doc_pages[hash_redirect_without_hash]
                 dest_hash_path = get_relative_html_path(
                     page_old, file.url + new_hash, use_directory_urls
                 )
-                self.redirect_entries[page_old]["hashes"][i] = (old_hash, dest_hash_path)
+                hash_redirects[i] = (old_hash, dest_hash_path)
 
-        for old_hash, new_link in self.redirect_entries[page_old]["hashes"]:
+        for old_hash, new_link in hash_redirects:
             log.info(f"Injecting redirect for '{page_old}{old_hash}' to '{new_link}'")
 
         js_redirects = JS_INJECT_EXISTS.format(
-            redirects=gen_anchor_redirects(self.redirect_entries[page_old]["hashes"])
+            redirects=gen_anchor_redirects(hash_redirects)
         )
         return js_redirects + html
 
@@ -183,9 +190,13 @@ class RedirectPlugin(BasePlugin):
         # Determine if 'use_directory_urls' is set
         use_directory_urls = config.get("use_directory_urls")
         for page_old, redirect_entry in self.redirect_entries.items():
+            page_old_without_hash, _ = _split_hash_fragment(str(page_old))
+            # If the old page is a valid document page, it was injected in `on_page_content`.
+            if page_old_without_hash in self.doc_pages:
+                continue
+
             # Need to remove hash fragment from new page to verify existence
             page_new = redirect_entry["overall"]
-            page_old_without_hash, _ = _split_hash_fragment(str(page_old))
             page_new_without_hash, new_hash = _split_hash_fragment(str(page_new))
 
             # External redirect targets are easy, just use it as the target path
@@ -205,32 +216,31 @@ class RedirectPlugin(BasePlugin):
                 log.warning("Redirect target '%s' does not exist!", page_new)
                 continue
 
-            # Fixup redirect_entry to use the correct path
-            for i in range(len(redirect_entry["hashes"])):
-                old_hash, new_link = redirect_entry["hashes"][i]
-                hash_redirect_without_hash, new_hash = _split_hash_fragment(str(new_link))
+            # Fixup all the individual hash link references to be relative.
+            hash_redirects = redirect_entry["hashes"]
+            for i in range(len(hash_redirects)):
+                old_hash, new_link = hash_redirects[i]
+                hash_redirect_without_hash, new_hash = _split_hash_fragment(new_link)
+                # If we are redirecting to a page that exists, update the destination hash path.
                 if hash_redirect_without_hash in self.doc_pages:
                     file = self.doc_pages[hash_redirect_without_hash]
                     dest_hash_path = get_relative_html_path(
                         page_old, file.url + new_hash, use_directory_urls
                     )
-                    redirect_entry["hashes"][i] = (old_hash, dest_hash_path)
+                    hash_redirects[i] = (old_hash, dest_hash_path)
 
-            if page_old_without_hash in self.doc_pages:
-                # If the old page is a valid document page, it was injected in `on_page_content`.
-                pass
-            else:
-                log.info(f"Creating redirect for '{page_old}' to '{dest_path}'")
-                for old_hash, new_link in redirect_entry["hashes"]:
-                    log.info(f"Creating redirect for '{page_old}{old_hash}' to '{new_link}'")
-                # Otherwise, create a new HTML file for the redirect
-                dest_path = get_relative_html_path(page_old, dest_path, use_directory_urls)
-                write_html(
-                    config["site_dir"],
-                    get_html_path(page_old, use_directory_urls),
-                    dest_path,
-                    redirect_entry["hashes"],
-                )
+            log.info(f"Creating redirect for '{page_old}' to '{dest_path}'")
+            for old_hash, new_link in hash_redirects:
+                log.info(f"Creating redirect for '{page_old}{old_hash}' to '{new_link}'")
+
+            # Create a new HTML file for the redirect
+            dest_path = get_relative_html_path(page_old, dest_path, use_directory_urls)
+            write_html(
+                config["site_dir"],
+                get_html_path(page_old, use_directory_urls),
+                dest_path,
+                hash_redirects,
+            )
 
 
 def _split_hash_fragment(path):
