@@ -62,7 +62,7 @@ JS_INJECT_EXISTS = """
 """
 
 
-def write_html(site_dir: str, old_path: str, new_path: str, anchor_list: list[tuple[str, str]]):
+def write_html(site_dir: str, old_path: str, new_path: str, anchor_list: list[tuple[str, str]]) -> None:
     """Write an HTML file in the site_dir with a meta redirect to the new page"""
     # Determine all relevant paths
     old_path_abs = os.path.join(site_dir, old_path)
