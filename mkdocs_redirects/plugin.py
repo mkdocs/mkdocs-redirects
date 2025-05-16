@@ -105,7 +105,7 @@ class RedirectEntry(TypedDict):
     overall: str
 
 
-def build_redirect_entries(redirects: dict):
+def build_redirect_entries(redirects: dict) -> dict[str, RedirectEntry]:
     """
     This builds a more-detailed lookup table from the original old->new page mappings.
 
