@@ -136,7 +136,7 @@ class RedirectPlugin(BasePlugin):
         ("redirect_maps", config_options.Type(dict, default={})),  # note the trailing comma
     )
 
-    redirect_entries: dict[str, RedirectEntry] = {}
+    redirect_entries: dict[str, RedirectEntry]
 
     # Build a list of redirects on file generation
     def on_files(self, files, config, **kwargs):
