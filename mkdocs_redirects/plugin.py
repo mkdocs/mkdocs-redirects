@@ -156,7 +156,6 @@ class RedirectPlugin(BasePlugin):
             self.doc_pages[page.src_path.replace(os.sep, "/")] = page
 
         # Create a dictionary to hold anchor maps for redirects
-
         self.redirect_entries = build_redirect_entries(self.redirects)
 
     def on_page_content(self, html, page, config, files):
