@@ -5,6 +5,7 @@ All rights reserved.
 
 import pytest
 from mkdocs.structure.files import File
+from mkdocs.structure.pages import Page
 
 from mkdocs_redirects import plugin
 
@@ -27,7 +28,7 @@ existing_pages = [
 def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
     wrote = ()
 
-    def write_html(site_dir, old_path, new_path):
+    def write_html(site_dir, old_path, new_path, anchor_list):
         nonlocal wrote
         wrote = (old_path, new_path)
 
@@ -35,13 +36,17 @@ def run_redirect_test(monkeypatch, old_page, new_page, use_directory_urls):
 
     plg = plugin.RedirectPlugin()
     plg.redirects = {old_page: new_page}
+    plg.redirect_entries = plugin.build_redirect_entries(plg.redirects)
     plg.doc_pages = {
         path: File(path, "docs", "site", use_directory_urls) for path in existing_pages
     }
     plg.doc_pages["the/fake.md"].dest_path = "fake/destination/index.html"
     plg.doc_pages["the/fake.md"].url = plg.doc_pages["the/fake.md"]._get_url(use_directory_urls)
 
-    plg.on_post_build(dict(use_directory_urls=use_directory_urls, site_dir="site"))
+    config = dict(use_directory_urls=use_directory_urls, site_dir="site")
+    for entry in plg.doc_pages.values():
+        plg.on_page_content(None, Page(None, entry, config), config, None)
+    plg.on_post_build(config)
 
     return wrote
 
